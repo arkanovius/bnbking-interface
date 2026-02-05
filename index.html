@@ -37,18 +37,12 @@
             content:'';
             position:fixed;
             inset:0;
-            background:linear-gradient(to bottom, rgba(10,14,39,0.75), rgba(26,15,46,0.85));
+            background:linear-gradient(to bottom, rgba(10,14,39,0.75), rgba(26,15,46,0.9));
             pointer-events:none;
             z-index:0;
         }
 
-        .container {
-            max-width:1400px;
-            margin:0 auto;
-            padding:20px;
-            position:relative;
-            z-index:1;
-        }
+        .container { max-width:1400px; margin:0 auto; padding:20px; position:relative; z-index:1; }
 
         header {
             display:flex;
@@ -112,110 +106,117 @@
 
         .production-bar {
             margin:15px 0;
-            background:rgba(0,0,0,0.4);
-            border-radius:12px;
-            padding:12px;
+            background:rgba(0,0,0,0.5);
+            border-radius:50px;
+            padding:12px 20px;
             display:flex;
             align-items:center;
-            gap:12px;
-            font-size:1.1em;
+            gap:15px;
+            font-size:1.2em;
+            font-weight:bold;
+            box-shadow:0 4px 12px rgba(0,0,0,0.5);
         }
 
-        .silver-bar { border:2px solid var(--silver); color:var(--silver); }
-        .gem-bar   { border:2px solid var(--gem);   color:var(--gem);   }
+        .silver-bar { border:3px solid var(--silver); color:var(--silver); }
+        .gem-bar   { border:3px solid var(--gem);   color:var(--gem);   }
 
-        .gems-conversion {
-            margin-top:10px;
-            text-align:center;
-            color:var(--gem);
-            font-size:1.1em;
-            background:rgba(64,224,208,0.1);
-            border:1px solid var(--gem);
-            border-radius:8px;
-            padding:10px;
+        .production-bar button {
+            margin-left:auto;
+            background:rgba(255,255,255,0.2);
+            border:none;
+            border-radius:50%;
+            width:36px;
+            height:36px;
+            font-size:1.4em;
+            color:white;
+            cursor:pointer;
         }
+
+        .production-bar button:hover { background:rgba(255,255,255,0.4); }
 
         .purchase-section {
             background:var(--bg-card);
-            border:2px solid var(--dark-gold);
-            border-radius:16px;
-            padding:25px;
+            border:3px solid var(--dark-gold);
+            border-radius:20px;
+            padding:30px;
             margin:30px 0;
+            backdrop-filter:blur(8px);
         }
 
         .purchase-header {
-            font-size:1.8em;
+            font-size:2.2em;
             color:var(--gold);
             text-align:center;
-            margin-bottom:20px;
-            text-shadow:0 0 10px var(--gold);
+            margin-bottom:25px;
+            text-shadow:0 0 15px var(--gold);
         }
 
         .toggle-container {
             display:flex;
             justify-content:center;
             align-items:center;
-            gap:20px;
-            margin:20px 0;
+            gap:25px;
+            margin:25px 0;
         }
 
-        .toggle-label {
-            font-size:1.3em;
-            font-weight:bold;
-        }
+        .toggle-label { font-size:1.5em; font-weight:bold; }
 
         .toggle {
             position:relative;
-            width:80px;
-            height:40px;
+            width:100px;
+            height:48px;
             background:#444;
-            border-radius:40px;
+            border-radius:48px;
             cursor:pointer;
+            transition:0.4s;
         }
 
         .toggle::before {
             content:'';
             position:absolute;
-            width:36px;
-            height:36px;
-            background:var(--gold);
+            width:42px;
+            height:42px;
+            background:white;
             border-radius:50%;
-            top:2px;
-            left:2px;
-            transition:0.3s;
+            top:3px;
+            left:3px;
+            transition:0.4s;
+            box-shadow:0 2px 8px rgba(0,0,0,0.4);
         }
 
         .toggle.active { background:var(--gem); }
-        .toggle.active::before { left:42px; background:#fff; }
+        .toggle.active::before { left:55px; }
 
         .input-row {
             display:flex;
-            gap:20px;
-            margin:20px 0;
+            gap:25px;
+            margin:25px 0;
             flex-wrap:wrap;
         }
 
         .input-box {
             flex:1;
-            min-width:220px;
-            background:rgba(0,0,0,0.4);
-            border:1px solid var(--border);
-            border-radius:12px;
-            padding:15px;
+            min-width:260px;
+            background:rgba(0,0,0,0.5);
+            border:2px solid var(--border);
+            border-radius:16px;
+            padding:20px;
             text-align:center;
+            font-size:1.3em;
         }
 
         .buy-btn {
             background:linear-gradient(135deg,#2ed573,#27ae60);
             color:white;
             border:none;
-            padding:16px 40px;
-            font-size:1.3em;
-            border-radius:12px;
+            padding:18px 60px;
+            font-size:1.5em;
+            font-weight:bold;
+            border-radius:16px;
             cursor:pointer;
-            margin:20px auto;
+            margin:30px auto;
             display:block;
-            width:fit-content;
+            box-shadow:0 6px 20px rgba(46,213,115,0.4);
         }
 
         .buy-btn:hover { transform:scale(1.05); }
@@ -224,10 +225,10 @@
             display:grid;
             grid-template-columns:repeat(20,1fr);
             gap:3px;
-            background:rgba(0,0,0,0.5);
-            padding:12px;
-            border-radius:12px;
-            margin-top:20px;
+            background:rgba(0,0,0,0.6);
+            padding:15px;
+            border-radius:16px;
+            margin-top:30px;
             max-width:100%;
             overflow-x:auto;
         }
@@ -240,11 +241,11 @@
             display:flex;
             align-items:center;
             justify-content:center;
-            font-size:0.7em;
+            font-size:0.75em;
             color:#8892a6;
         }
 
-        .tile:hover { background:var(--gold); transform:scale(1.08); }
+        .tile:hover { background:var(--gold); transform:scale(1.1); }
 
         .tile.occupied {
             background:linear-gradient(135deg,var(--gold),var(--dark-gold));
@@ -254,12 +255,12 @@
 
         .tile-number {
             position:absolute;
-            top:4px;
-            left:4px;
-            font-size:0.65em;
+            top:6px;
+            left:6px;
+            font-size:0.7em;
             font-weight:bold;
             color:var(--gold);
-            text-shadow:0 0 3px #000;
+            text-shadow:0 0 4px #000;
             pointer-events:none;
             z-index:5;
         }
@@ -282,7 +283,7 @@
 
         <div id="notConnected" class="section">
             <h2 class="section-title">Bienvenue sur BNBKing</h2>
-            <p>Connectez votre wallet pour jouer, gagner des gems et développer votre royaume.</p>
+            <p>Connectez votre wallet pour développer votre royaume et gagner des gems & silver !</p>
         </div>
 
         <div id="gameInterface" class="hidden">
@@ -305,48 +306,76 @@
 
             <!-- Production Bars -->
             <div class="production-bar silver-bar">
-                <img src="https://img.icons8.com/fluency/48/000000/coin.png" alt="Silver" width="32">
-                <span>+0 Silver / Hour</span>
-                <button style="margin-left:auto;background:var(--silver);color:#000">+</button>
+                <img src="https://img.icons8.com/fluency/48/000000/coin.png" alt="Silver" width="36">
+                <span id="silverPerHour">+0 Silver / Hour</span>
+                <button>+</button>
             </div>
 
             <div class="production-bar gem-bar">
-                <img src="https://img.icons8.com/fluency/48/000000/gem-stone.png" alt="Gems" width="32">
-                <span>+0 Gems / Hour</span>
-                <button style="margin-left:auto;background:var(--gem);color:#000">+</button>
+                <img src="https://img.icons8.com/fluency/48/000000/gem-stone.png" alt="Gems" width="36">
+                <span id="gemsPerHour">+0 Gems / Hour</span>
+                <button>+</button>
             </div>
 
-            <!-- Purchase / Swap Section -->
+            <!-- Purchase Section -->
             <div class="purchase-section">
                 <div class="purchase-header">Purchase</div>
 
                 <div class="toggle-container">
                     <span class="toggle-label">BNB</span>
-                    <div class="toggle" id="toggleSwitch"></div>
+                    <div class="toggle" id="purchaseToggle"></div>
                     <span class="toggle-label">GEMS</span>
                 </div>
 
                 <div class="input-row">
                     <div class="input-box">
                         <strong>Give</strong><br>
-                        <span id="giveAmount">0 BNB</span>
+                        <span id="givePurchase">0 BNB</span>
                     </div>
                     <div class="input-box">
                         <strong>Receive</strong><br>
-                        <span id="receiveAmount">0 SILVER</span>
+                        <span id="receivePurchase">0 SILVER</span>
                     </div>
                 </div>
 
-                <button class="buy-btn" onclick="alert('Fonction achat simulée')">Buy Silver</button>
+                <button class="buy-btn" onclick="alert('Achat simulé - Fonctionnalité en cours')">Buy Silver</button>
 
-                <div style="text-align:center;margin-top:15px;">
+                <div style="text-align:center;margin-top:15px;color:var(--text-dim);">
                     1 BNB ≈ 1,000,000 SILVER
                 </div>
             </div>
 
-            <!-- Buildings Grid -->
+            <!-- Swap Section -->
+            <div class="purchase-section">
+                <div class="purchase-header">Swap</div>
+
+                <div class="toggle-container">
+                    <span class="toggle-label">GEMS</span>
+                    <div class="toggle" id="swapToggle"></div>
+                    <span class="toggle-label">SILVER</span>
+                </div>
+
+                <div class="input-row">
+                    <div class="input-box">
+                        <strong>Give</strong><br>
+                        <span id="giveSwap">0 GEMS</span>
+                    </div>
+                    <div class="input-box">
+                        <strong>Receive</strong><br>
+                        <span id="receiveSwap">0 SILVER</span>
+                    </div>
+                </div>
+
+                <button class="buy-btn" onclick="alert('Swap simulé - Fonctionnalité en cours')">Sell Gems</button>
+
+                <div style="text-align:center;margin-top:15px;color:var(--text-dim);">
+                    1 GEM ≈ 2 SILVER
+                </div>
+            </div>
+
+            <!-- Buildings -->
             <div class="section">
-                <h2 class="section-title">🏰 Construire des Bâtiments</h2>
+                <h2 class="section-title">Construire des Bâtiments</h2>
                 <div class="building-grid" id="buildingGrid"></div>
             </div>
         </div>
@@ -363,21 +392,18 @@
             "function getKingdom(address) view returns (tuple(uint32 gold, uint32 gems, uint32 perHour, uint32 alliesCount, uint32 alliesEarned, uint32 claimTime, uint32 battleTime, uint16 battleId, uint8 battlesInRow, bool isWinInRow, address ally, uint8[360] tiles))",
             "function buyGold(address _ally) external payable",
             "function sellGems(uint256 _gems) external",
-            "function swapGemsToGold(uint256 _gems) external",
-            "function placeBuildings(uint16[] calldata _tileIds, uint8 _level) external",
-            "function upgradeBuilding(uint16 _tileId) external",
-            "function battle(uint8 _winChance) external"
+            "function swapGemsToGold(uint256 _gems) external"
         ];
 
         async function connectWallet() {
-            if (!window.ethereum) return alert("Installe MetaMask ou Rabby !");
+            if (!window.ethereum) return alert("Installe MetaMask/Rabby !");
             provider = new ethers.providers.Web3Provider(window.ethereum);
             await provider.send("eth_requestAccounts", []);
             signer = provider.getSigner();
             contract = new ethers.Contract("0x864EE1d1B51306e30836B84AdE81e39ebB6e8e0C", CONTRACT_ABI, signer);
             userAddress = await signer.getAddress();
 
-            document.getElementById('walletAddress').textContent = userAddress.slice(0,6) + '...' + userAddress.slice(-4);
+            document.getElementById('walletAddress').textContent = userAddress.slice(0,6)+'...'+userAddress.slice(-4);
             document.getElementById('walletAddress').classList.remove('hidden');
             document.getElementById('notConnected').classList.add('hidden');
             document.getElementById('gameInterface').classList.remove('hidden');
@@ -398,9 +424,7 @@
 
                 renderBuildingGrid(kingdom.tiles);
                 updateGemsConversion();
-            } catch(e) {
-                console.error(e);
-            }
+            } catch(e) { console.error(e); }
         }
 
         function renderBuildingGrid(tiles) {
@@ -428,7 +452,6 @@
             }
         }
 
-        // Simulation gratuite
         function simulatePassive() {
             if (!perHourCached || !lastClaimTime) return;
             const now = Math.floor(Date.now() / 1000);
@@ -446,12 +469,10 @@
 
         setInterval(simulatePassive, 60000);
 
-        // Conversion gems → BNB/USDT
         async function updateGemsConversion() {
             const gems = Number(document.getElementById('gemsAmount').textContent.replace(/,/g,'')) || 0;
             const bnbVal = gems / 1000000;
             const usdtVal = bnbVal * bnbPriceUSD;
-
             document.getElementById('gemsValue').textContent = `≈ ${bnbVal.toFixed(6)} BNB (~${usdtVal.toFixed(2)} USDT)`;
 
             try {
@@ -461,7 +482,6 @@
             } catch {}
         }
 
-        // Connexion
         document.getElementById('connectWalletBtn').onclick = connectWallet;
     </script>
 </body>
