@@ -19,8 +19,6 @@
             --text-dim: #8892a6;
             --danger: #ff4757;
             --success: #2ed573;
-            --select-place: #22c55e;   /* vert pour mode construire */
-            --select-upgrade: #a855f7; /* violet pour mode améliorer */
         }
 
         * { margin:0; padding:0; box-sizing:border-box; }
@@ -44,7 +42,13 @@
             z-index:0;
         }
 
-        .container { max-width:1400px; margin:0 auto; padding:20px; position:relative; z-index:1; }
+        .container {
+            max-width:1400px;
+            margin:0 auto;
+            padding:20px;
+            position:relative;
+            z-index:1;
+        }
 
         header {
             display:flex;
@@ -64,11 +68,17 @@
             background:linear-gradient(135deg,var(--gold),var(--dark-gold));
             -webkit-background-clip:text;
             -webkit-text-fill-color:transparent;
+            background-clip:text;
             letter-spacing:2px;
             text-shadow:0 0 30px rgba(255,215,0,0.3);
         }
 
-        .wallet-section { display:flex; gap:15px; align-items:center; flex-wrap:wrap; }
+        .wallet-section {
+            display:flex;
+            gap:15px;
+            align-items:center;
+            flex-wrap:wrap;
+        }
 
         button {
             padding:12px 28px;
@@ -79,16 +89,34 @@
             font-size:1em;
             cursor:pointer;
             border-radius:8px;
-            transition:all 0.3s;
+            transition:all 0.3s ease;
+            text-transform:uppercase;
+            letter-spacing:0.8px;
+            position:relative;
+            overflow:hidden;
         }
 
-        button:hover { transform:translateY(-2px); box-shadow:0 10px 30px rgba(255,215,0,0.4); }
+        button:hover {
+            transform:translateY(-2px);
+            box-shadow:0 10px 30px rgba(255,215,0,0.4);
+        }
 
-        button:disabled { opacity:0.5; cursor:not-allowed; }
+        button:disabled {
+            opacity:0.5;
+            cursor:not-allowed;
+        }
 
-        button.secondary { background:linear-gradient(135deg,var(--gem),var(--dark-gem)); border-color:var(--gem); }
+        button.secondary {
+            background:linear-gradient(135deg,var(--gem),var(--dark-gem));
+            border-color:var(--gem);
+            color:var(--bg-dark);
+        }
 
-        button.danger { background:linear-gradient(135deg,var(--danger),#c23616); border-color:var(--danger); color:white; }
+        button.danger {
+            background:linear-gradient(135deg,var(--danger),#c23616);
+            border-color:var(--danger);
+            color:white;
+        }
 
         .wallet-address {
             padding:10px 20px;
@@ -114,19 +142,34 @@
             padding:25px;
             position:relative;
             overflow:hidden;
+            transition:all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform:translateY(-5px);
+            box-shadow:0 10px 30px rgba(255,215,0,0.2);
         }
 
         .stat-card::before {
             content:'';
             position:absolute;
-            top:0;left:0;right:0;
+            top:0; left:0; right:0;
             height:3px;
             background:linear-gradient(90deg,var(--gold),var(--gem));
         }
 
-        .stat-label { font-size:0.9em; color:var(--text-dim); text-transform:uppercase; margin-bottom:10px; }
+        .stat-label {
+            font-size:0.9em;
+            color:var(--text-dim);
+            text-transform:uppercase;
+            margin-bottom:10px;
+        }
 
-        .stat-value { font-size:2em; font-weight:700; font-family:'Cinzel',serif; }
+        .stat-value {
+            font-size:2em;
+            font-weight:700;
+            font-family:'Cinzel',serif;
+        }
 
         .stat-value.gold { color:var(--gold); text-shadow:0 0 20px rgba(255,215,0,0.5); }
         .stat-value.gem  { color:var(--gem);  text-shadow:0 0 20px rgba(64,224,208,0.5); }
@@ -159,7 +202,9 @@
             padding-bottom:15px;
         }
 
-        .input-group { margin-bottom:20px; }
+        .input-group {
+            margin-bottom:20px;
+        }
 
         label {
             display:block;
@@ -219,7 +264,10 @@
             transition:all 0.2s ease;
         }
 
-        .tile:hover { background:#3a4f6f; transform:scale(1.08); }
+        .tile:hover {
+            background:#3a4f6f;
+            transform:scale(1.08);
+        }
 
         .tile.occupied {
             background:linear-gradient(135deg,var(--gold),var(--dark-gold));
@@ -228,14 +276,9 @@
             cursor:default;
         }
 
-        .tile.selected-place {
-            outline:3px solid var(--select-place);
-            outline-offset:-3px;
-        }
-
-        .tile.selected-upgrade {
-            outline:3px solid var(--select-upgrade);
-            outline-offset:-3px;
+        .tile.selected {
+            background:var(--gem);
+            box-shadow:0 0 12px var(--gem);
         }
 
         .tile-number {
@@ -419,45 +462,48 @@
                 </div>
             </div>
 
-            <!-- Buildings - Grille interactive -->
+            <!-- Buildings -->
             <div class="section">
-                <h2 class="section-title">🏰 Construire & Améliorer</h2>
+                <h2 class="section-title">🏰 Construire des Bâtiments</h2>
                 <div class="info-box">
-                    💡 Mode "Construire" : cliquez sur les cases vides (grises) pour les sélectionner (plusieurs possibles).<br>
-                    Mode "Améliorer" : cliquez sur une case jaune pour la sélectionner, puis cliquez sur "Améliorer cette case".<br>
-                    Cases jaunes = déjà occupées.
+                    💡 Cliquez sur les cases vides (grises) pour les sélectionner, puis choisissez un niveau et construisez.<br>Les cases jaunes sont déjà occupées.
                 </div>
-
-                <div style="margin:20px 0; display:flex; gap:15px; flex-wrap:wrap; align-items:center;">
-                    <button onclick="setMode('place')" style="background:#16a34a; color:white;">Mode : Construire</button>
-                    <button onclick="setMode('upgrade')" style="background:#a855f7; color:white;">Mode : Améliorer</button>
-                    <button onclick="clearSelection()" class="secondary">Effacer sélection</button>
-                    <span style="margin-left:auto; font-weight:600;">
-                        Cases sélectionnées : <span id="selectedCount">0</span>
-                    </span>
+                <div class="grid-container">
+                    <div class="input-group">
+                        <label>Niveau du bâtiment</label>
+                        <select id="buildingLevel">
+                            <option value="1">Niveau 1 - 10,000 Gold (8/h)</option>
+                            <option value="2">Niveau 2 - 28,000 Gold (24/h)</option>
+                            <option value="3">Niveau 3 - 54,000 Gold (48/h)</option>
+                            <option value="4">Niveau 4 - 100,000 Gold (96/h)</option>
+                            <option value="5">Niveau 5 - 250,000 Gold (248/h)</option>
+                            <option value="6">Niveau 6 - 500,000 Gold (520/h)</option>
+                            <option value="7">Niveau 7 - 1,000,000 Gold (1,100/h)</option>
+                            <option value="8">Niveau 8 - 2,000,000 Gold (2,300/h)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Cases sélectionnées: <span id="selectedCount">0</span></label>
+                        <div class="action-buttons">
+                            <button onclick="placeBuildings()">Construire</button>
+                            <button onclick="clearSelection()" class="secondary">Effacer</button>
+                        </div>
+                    </div>
                 </div>
-
-                <div id="placeControls" style="margin:15px 0; display:flex; gap:15px; flex-wrap:wrap; align-items:center;">
-                    <label>Niveau du bâtiment</label>
-                    <select id="buildingLevel">
-                        <option value="1">Niveau 1 - 10,000 Gold (8/h)</option>
-                        <option value="2">Niveau 2 - 28,000 Gold (24/h)</option>
-                        <option value="3">Niveau 3 - 54,000 Gold (48/h)</option>
-                        <option value="4">Niveau 4 - 100,000 Gold (96/h)</option>
-                        <option value="5">Niveau 5 - 250,000 Gold (248/h)</option>
-                        <option value="6">Niveau 6 - 500,000 Gold (520/h)</option>
-                        <option value="7">Niveau 7 - 1,000,000 Gold (1,100/h)</option>
-                        <option value="8">Niveau 8 - 2,000,000 Gold (2,300/h)</option>
-                    </select>
-                    <button onclick="placeBuildings()">Construire sur sélection</button>
-                </div>
-
-                <div id="upgradeControls" style="margin:15px 0; display:none; gap:15px; flex-wrap:wrap; align-items:center;">
-                    <span>Case sélectionnée : <strong id="upgradeTileId">aucune</strong></span>
-                    <button onclick="upgradeBuilding()">Améliorer cette case</button>
-                </div>
-
                 <div class="building-grid" id="buildingGrid"></div>
+            </div>
+
+            <!-- Upgrade -->
+            <div class="section">
+                <h2 class="section-title">⬆️ Améliorer un Bâtiment</h2>
+                <div class="info-box">
+                    💡 Coût = 25% du coût de base • +25% de production par amélioration
+                </div>
+                <div class="input-group">
+                    <label>ID de la case (0–359)</label>
+                    <input type="number" id="upgradeTileId" placeholder="0" min="0" max="359">
+                </div>
+                <button onclick="upgradeBuilding()">Améliorer</button>
             </div>
 
             <!-- Battle -->
@@ -475,21 +521,21 @@
                         <label>Chance de victoire (40–60%)</label>
                         <input type="number" id="winChance" placeholder="50" min="40" max="60" value="50">
                         <small style="color:var(--text-dim);margin-top:5px;display:block;">
-                            Plus faible = meilleure récompense si victoire
+                            Plus faible = meilleure récompense en cas de victoire
                         </small>
                     </div>
                     <button onclick="startBattle()">Lancer la Bataille</button>
                 </div>
             </div>
 
-            <!-- Contract Config -->
+            <!-- Contract -->
             <div class="section">
-                <h2 class="section-title">⚙️ Configuration du Contrat</h2>
+                <h2 class="section-title">⚙️ Configuration Contrat</h2>
                 <div class="input-group">
                     <label>Adresse du smart contract</label>
                     <input type="text" id="contractAddress" placeholder="0xC1e3621427ad5E90Bc50eBCa38bd89AEB9953ACd">
                     <small style="color:var(--text-dim);margin-top:5px;display:block;">
-                        Entrez l'adresse du smart contract déployé sur BSC
+                        Adresse du contrat déployé sur BSC
                     </small>
                 </div>
                 <button onclick="setContractAddress()" class="secondary">Configurer</button>
@@ -498,22 +544,19 @@
         </div>
 
         <footer>
-            <p>BNBKing – Interface Communautaire | BSC Network</p>
-            <p style="margin-top:10px;font-size:0.85em;">
-                ⚠️ Assurez-vous d'être connecté au réseau BSC (Chain ID: 56)
+            <p>BNBKing – Interface communautaire | Réseau BSC</p>
+            <p style="margin-top:8px; font-size:0.85em;">
+                ⚠️ Vérifiez que vous êtes bien sur le réseau Binance Smart Chain (Chain ID: 56)
             </p>
         </footer>
     </div>
 
     <script>
         let provider, signer, contract, userAddress;
-        let selectedTiles = new Set();       // cases sélectionnées en mode "place"
-        let upgradeTile = null;              // case sélectionnée en mode "upgrade"
-        let currentMode = "place";           // "place" ou "upgrade"
-
+        let selectedTiles = new Set();
         let lastClaimTime = 0;
         let perHourCached = 0;
-        let bnbPriceUSD = 600;
+        let bnbPriceUSD = 600; // estimation février 2026 – sera mise à jour
 
         const CONTRACT_ABI = [
             "function buyGold(address _ally) external payable",
@@ -531,7 +574,9 @@
             "event BattleResult(address indexed king, bool isWin, uint8 winChance, uint256 battleReward)"
         ];
 
-        // ─── Simulation passive ────────────────────────────────────────────────
+        // ────────────────────────────────────────────────
+        //  Simulation passive locale (gems + gold)
+        // ────────────────────────────────────────────────
         async function updatePassiveSimulated() {
             if (!contract || !userAddress) return;
             try {
@@ -544,26 +589,38 @@
 
                 if (hoursPassed > 0) {
                     const earned = hoursPassed * perHourCached;
-                    let gems = Number(document.getElementById('gemsAmount').textContent.replace(/,/g,'')) || 0;
-                    let gold = Number(document.getElementById('goldAmount').textContent.replace(/,/g,'')) || 0;
+                    let gems  = Number(document.getElementById('gemsAmount').textContent.replace(/,/g,'')) || 0;
+                    let gold  = Number(document.getElementById('goldAmount').textContent.replace(/,/g,'')) || 0;
 
-                    document.getElementById('gemsAmount').textContent = (gems + earned).toLocaleString();
-                    document.getElementById('goldAmount').textContent = (gold + earned).toLocaleString();
+                    gems += earned;
+                    gold += earned;
+
+                    document.getElementById('gemsAmount').textContent = gems.toLocaleString();
+                    document.getElementById('goldAmount').textContent = gold.toLocaleString();
 
                     updateGemsConversion();
                 }
-            } catch (err) {}
+            } catch (err) {
+                console.warn("Simulation passive échouée", err);
+            }
         }
+
         setInterval(updatePassiveSimulated, 60000);
 
-        // ─── Conversion live ───────────────────────────────────────────────────
+        // ────────────────────────────────────────────────
+        //  Conversion Gems → BNB / USDT (live)
+        // ────────────────────────────────────────────────
         async function updateGemsConversion() {
-            const gems = Number(document.getElementById('gemsAmount').textContent.replace(/,/g,'')) || 0;
-            const bnbVal = gems / 1000000;
+            const gemsStr = document.getElementById('gemsAmount').textContent.replace(/,/g,'');
+            const gems = Number(gemsStr) || 0;
+
+            const bnbVal = gems / 1_000_000;
             const usdtVal = bnbVal * bnbPriceUSD;
+
             document.getElementById('gemsValue').textContent = 
                 `≈ ${bnbVal.toFixed(6)} BNB (~${usdtVal.toFixed(2)} USDT)`;
 
+            // Mise à jour prix BNB (CoinGecko)
             try {
                 const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd');
                 const data = await res.json();
@@ -571,7 +628,9 @@
             } catch {}
         }
 
-        // ─── Wallet ────────────────────────────────────────────────────────────
+        // ────────────────────────────────────────────────
+        //  Wallet + Contrat
+        // ────────────────────────────────────────────────
         async function connectWallet() {
             try {
                 if (!window.ethereum) throw new Error("MetaMask / Rabby non détecté");
@@ -648,24 +707,24 @@
             if (!contract || !userAddress) return;
             try {
                 const k = await contract.getKingdom(userAddress);
-                document.getElementById('goldAmount').textContent = k.gold.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                document.getElementById('gemsAmount').textContent = k.gems.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                document.getElementById('perHourAmount').textContent = k.perHour.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                document.getElementById('alliesCount').textContent = k.alliesCount.toString();
+                document.getElementById('goldAmount').textContent    = k.gold.toString().replace(/\B(?=(\d{3})+(?!\d))/g,",");
+                document.getElementById('gemsAmount').textContent    = k.gems.toString().replace(/\B(?=(\d{3})+(?!\d))/g,",");
+                document.getElementById('perHourAmount').textContent = k.perHour.toString().replace(/\B(?=(\d{3})+(?!\d))/g,",");
+                document.getElementById('alliesCount').textContent   = k.alliesCount;
 
-                // Sauvegarde pour la grille interactive
-                window.currentTiles = Array.from(k.tiles).map(Number);
-
-                renderBuildingGrid(window.currentTiles);
+                renderBuildingGrid(k.tiles);
                 updateBattleCooldown(k.battleTime);
                 updateGemsConversion();
+                updatePassiveSimulated(); // coup de pouce immédiat
             } catch (err) {
                 console.error(err);
                 showMessage('Erreur chargement données', 'error');
             }
         }
 
-        // ─── Grille interactive ────────────────────────────────────────────────
+        // ────────────────────────────────────────────────
+        //  Affichage grille bâtiments
+        // ────────────────────────────────────────────────
         function renderBuildingGrid(tiles) {
             const grid = document.getElementById('buildingGrid');
             grid.innerHTML = '';
@@ -679,133 +738,176 @@
                 num.textContent = i;
                 tile.appendChild(num);
 
-                const val = tiles[i];
-                if (val > 0) {
+                if (tiles[i] > 0) {
                     tile.classList.add('occupied');
-                    const lvl = val % 10;
-                    const upg = Math.floor(val / 10);
+                    const lvl = tiles[i] % 10;
+                    const upg = Math.floor(tiles[i] / 10);
                     const lvlDiv = document.createElement('div');
                     lvlDiv.className = 'level';
-                    lvlDiv.textContent = lvl + (upg > 0 ? '+' + upg : '');
+                    lvlDiv.textContent = lvl + (upg ? `+${upg}` : '');
                     tile.appendChild(lvlDiv);
                 } else {
-                    tile.onclick = () => handleTileClick(i);
+                    tile.onclick = () => toggleTileSelection(i);
                 }
-
-                // Sélection visuelle selon mode
-                if (currentMode === 'place' && selectedTiles.has(i)) {
-                    tile.classList.add('selected-place');
-                }
-                if (currentMode === 'upgrade' && upgradeTile === i) {
-                    tile.classList.add('selected-upgrade');
-                }
-
                 grid.appendChild(tile);
             }
-
-            document.getElementById('selectedCount').textContent = selectedTiles.size;
-            document.getElementById('upgradeTileId').textContent = upgradeTile !== null ? upgradeTile : 'aucune';
         }
 
-        function handleTileClick(id) {
+        function toggleTileSelection(id) {
             const tile = document.querySelector(`.tile[data-id="${id}"]`);
-            if (!tile) return;
-
-            if (currentMode === 'place') {
-                // Cases vides seulement
-                if (window.currentTiles[id] !== 0) return;
-
-                if (selectedTiles.has(id)) {
-                    selectedTiles.delete(id);
-                    tile.classList.remove('selected-place');
-                } else {
-                    selectedTiles.add(id);
-                    tile.classList.add('selected-place');
-                }
-            } else if (currentMode === 'upgrade') {
-                // Cases occupées seulement
-                if (window.currentTiles[id] === 0) return;
-
-                upgradeTile = (upgradeTile === id) ? null : id;
-
-                // Re-render pour mettre à jour visuel
-                renderBuildingGrid(window.currentTiles);
-            }
-
-            document.getElementById('selectedCount').textContent = selectedTiles.size;
-            document.getElementById('upgradeTileId').textContent = upgradeTile !== null ? upgradeTile : 'aucune';
-        }
-
-        function setMode(mode) {
-            currentMode = mode;
-
-            if (mode === 'place') {
-                upgradeTile = null;
-                document.getElementById('placeControls').style.display = 'flex';
-                document.getElementById('upgradeControls').style.display = 'none';
+            if (selectedTiles.has(id)) {
+                selectedTiles.delete(id);
+                tile.classList.remove('selected');
             } else {
-                selectedTiles.clear();
-                document.getElementById('placeControls').style.display = 'none';
-                document.getElementById('upgradeControls').style.display = 'flex';
-                document.getElementById('upgradeTileId').textContent = 'aucune';
+                selectedTiles.add(id);
+                tile.classList.add('selected');
             }
-
             document.getElementById('selectedCount').textContent = selectedTiles.size;
-            renderBuildingGrid(window.currentTiles || []);
         }
 
         function clearSelection() {
             selectedTiles.clear();
+            document.querySelectorAll('.tile.selected').forEach(t => t.classList.remove('selected'));
             document.getElementById('selectedCount').textContent = 0;
-            renderBuildingGrid(window.currentTiles || []);
+        }
+
+        function updateBattleCooldown(lastTime) {
+            const cd = document.getElementById('battleCooldown');
+            const now = Math.floor(Date.now()/1000);
+            const diff = now - lastTime;
+            if (diff < 86400) {
+                const rem = 86400 - diff;
+                const h = Math.floor(rem / 3600);
+                const m = Math.floor((rem % 3600)/60);
+                cd.textContent = `⏱️ Cooldown : ${h}h ${m}m`;
+                cd.classList.remove('hidden');
+            } else {
+                cd.classList.add('hidden');
+            }
+        }
+
+        // ────────────────────────────────────────────────
+        //  Actions contrat
+        // ────────────────────────────────────────────────
+        async function buyGold() {
+            if (!contract) return showMessage('Configurez le contrat', 'error');
+            const bnb = document.getElementById('bnbAmount').value;
+            const ally = document.getElementById('allyAddress').value.trim() || ethers.constants.AddressZero;
+            if (!bnb || +bnb <= 0) return showMessage('Montant invalide', 'error');
+
+            try {
+                showMessage('Transaction en cours...', 'info');
+                const tx = await contract.buyGold(ally, {value: ethers.utils.parseEther(bnb)});
+                await tx.wait();
+                showMessage('Or acheté !', 'success');
+                await loadKingdomData();
+            } catch (e) {
+                showMessage('Erreur : ' + (e.reason||e.message), 'error');
+            }
+        }
+
+        async function sellGems() {
+            if (!contract) return showMessage('Configurez le contrat', 'error');
+            const amt = document.getElementById('sellGemsAmount').value;
+            if (!amt || +amt <= 0) return showMessage('Montant invalide', 'error');
+
+            try {
+                showMessage('Transaction en cours...', 'info');
+                const tx = await contract.sellGems(amt);
+                await tx.wait();
+                showMessage('Gemmes vendues !', 'success');
+                await loadKingdomData();
+            } catch (e) {
+                showMessage('Erreur : ' + (e.reason||e.message), 'error');
+            }
+        }
+
+        async function swapGemsToGold() {
+            if (!contract) return showMessage('Configurez le contrat', 'error');
+            const amt = document.getElementById('swapGemsAmount').value;
+            if (!amt || +amt <= 0) return showMessage('Montant invalide', 'error');
+
+            try {
+                showMessage('Transaction en cours...', 'info');
+                const tx = await contract.swapGemsToGold(amt);
+                await tx.wait();
+                showMessage('Échange effectué !', 'success');
+                await loadKingdomData();
+            } catch (e) {
+                showMessage('Erreur : ' + (e.reason||e.message), 'error');
+            }
         }
 
         async function placeBuildings() {
             if (!contract) return showMessage('Configurez le contrat', 'error');
             if (selectedTiles.size === 0) return showMessage('Sélectionnez au moins une case', 'error');
 
-            const level = document.getElementById('buildingLevel').value;
-            const tileIds = Array.from(selectedTiles);
+            const level = +document.getElementById('buildingLevel').value;
+            const ids = Array.from(selectedTiles);
 
             try {
                 showMessage('Transaction en cours...', 'info');
-                const tx = await contract.placeBuildings(tileIds, level);
+                const tx = await contract.placeBuildings(ids, level);
                 await tx.wait();
                 showMessage('Bâtiments construits !', 'success');
                 clearSelection();
                 await loadKingdomData();
             } catch (e) {
-                showMessage('Erreur : ' + (e.reason || e.message), 'error');
+                showMessage('Erreur : ' + (e.reason||e.message), 'error');
             }
         }
 
         async function upgradeBuilding() {
             if (!contract) return showMessage('Configurez le contrat', 'error');
-            if (upgradeTile === null) return showMessage('Sélectionnez une case à améliorer', 'error');
+            const id = document.getElementById('upgradeTileId').value;
+            if (!id || +id < 0 || +id > 359) return showMessage('ID invalide (0–359)', 'error');
 
             try {
                 showMessage('Transaction en cours...', 'info');
-                const tx = await contract.upgradeBuilding(upgradeTile);
+                const tx = await contract.upgradeBuilding(id);
                 await tx.wait();
-                showMessage('Bâtiment amélioré !', 'success');
-                upgradeTile = null;
-                document.getElementById('upgradeTileId').textContent = 'aucune';
+                showMessage('Amélioration effectuée !', 'success');
                 await loadKingdomData();
             } catch (e) {
-                showMessage('Erreur : ' + (e.reason || e.message), 'error');
+                showMessage('Erreur : ' + (e.reason||e.message), 'error');
             }
         }
 
-        // ─── Le reste de ton script original ───────────────────────────────────
-        // (buyGold, sellGems, swapGemsToGold, startBattle, updateBattleCooldown, showMessage, etc.)
-        // Colle ici toutes les autres fonctions de ton code original, elles restent inchangées
+        async function startBattle() {
+            if (!contract) return showMessage('Configurez le contrat', 'error');
+            const chance = +document.getElementById('winChance').value;
+            if (!chance || chance < 40 || chance > 60) return showMessage('Chance doit être entre 40 et 60', 'error');
 
-        // Init modes
-        setMode('place');
+            try {
+                showMessage('Bataille en cours...', 'info');
+                const tx = await contract.battle(chance);
+                const receipt = await tx.wait();
+                const evt = receipt.events.find(e => e.event === 'BattleResult');
+                if (evt) {
+                    const win = evt.args.isWin;
+                    const rew = evt.args.battleReward.toString();
+                    showMessage(`${win ? '🎉 Victoire !' : '😢 Défaite'} – Récompense : ${rew} Gold`, win ? 'success' : 'info');
+                }
+                await loadKingdomData();
+            } catch (e) {
+                showMessage('Erreur : ' + (e.reason||e.message), 'error');
+            }
+        }
 
-        // Événements
+        function showMessage(text, type = 'info') {
+            const c = document.getElementById('messageContainer');
+            const m = document.createElement('div');
+            m.className = `message ${type}`;
+            m.textContent = text;
+            c.appendChild(m);
+            setTimeout(() => m.remove(), 5000);
+        }
+
+        // ────────────────────────────────────────────────
+        //  Événements
+        // ────────────────────────────────────────────────
         document.getElementById('connectWalletBtn').onclick = connectWallet;
-        document.getElementById('disconnectBtn').onclick = disconnectWallet;
+        document.getElementById('disconnectBtn').onclick   = disconnectWallet;
 
         setInterval(() => {
             if (contract && userAddress) loadKingdomData();
