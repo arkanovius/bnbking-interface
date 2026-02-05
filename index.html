@@ -289,9 +289,6 @@
             transition: all 0.2s ease;
             position: relative;
             min-width: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
         .tile:hover {
@@ -320,7 +317,7 @@
             color: var(--bg-dark);
         }
 
-        /* Numéro de case (0 à 359) en jaune, haut gauche */
+        /* Numéro de case en jaune (0 à 359), haut gauche */
         .tile-number {
             position: absolute;
             top: 4px;
@@ -646,6 +643,38 @@
         let userAddress;
         let selectedTiles = new Set();
         
+        // ----- AJOUT 1 : Simulation gratuite gems/gold (sans gas) -----
+        let lastClaimTime = 0;
+        let perHourCached = 0;
+
+        async function updatePassiveSimulated() {
+            if (!contract || !userAddress) return;
+
+            try {
+                const kingdom = await contract.getKingdom(userAddress);
+                lastClaimTime = Number(kingdom.claimTime);
+                perHourCached = Number(kingdom.perHour);
+
+                const now = Math.floor(Date.now() / 1000);
+                const hoursPassed = Math.floor((now - lastClaimTime) / 3600);
+
+                if (hoursPassed > 0) {
+                    const earned = hoursPassed * perHourCached;
+                    const currentGems = Number(document.getElementById('gemsAmount').textContent.replace(/,/g, '')) || 0;
+                    const currentGold = Number(document.getElementById('goldAmount').textContent.replace(/,/g, '')) || 0;
+
+                    document.getElementById('gemsAmount').textContent = (currentGems + earned).toLocaleString();
+                    document.getElementById('goldAmount').textContent = (currentGold + earned).toLocaleString();
+                }
+            } catch (err) {
+                console.log("Erreur simu :", err);
+            }
+        }
+
+        // Lance la simulation toutes les 60 secondes
+        setInterval(updatePassiveSimulated, 60000);
+        // ----- FIN AJOUT 1 -----
+
         const CONTRACT_ABI = [
             "function buyGold(address _ally) external payable",
             "function sellGems(uint256 _gems) external",
@@ -670,27 +699,21 @@
                     return;
                 }
 
-                // Check if on BSC network
                 const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-                if (chainId !== '0x38') { // 0x38 = 56 in hex (BSC Mainnet)
+                if (chainId !== '0x38') {
                     try {
                         await window.ethereum.request({
                             method: 'wallet_switchEthereumChain',
                             params: [{ chainId: '0x38' }],
                         });
                     } catch (switchError) {
-                        // Chain not added, add it
                         if (switchError.code === 4902) {
                             await window.ethereum.request({
                                 method: 'wallet_addEthereumChain',
                                 params: [{
                                     chainId: '0x38',
                                     chainName: 'BSC Mainnet',
-                                    nativeCurrency: {
-                                        name: 'BNB',
-                                        symbol: 'BNB',
-                                        decimals: 18
-                                    },
+                                    nativeCurrency: { name: 'BNB', symbol: 'BNB', decimals: 18 },
                                     rpcUrls: ['https://bsc-dataseed.binance.org/'],
                                     blockExplorerUrls: ['https://bscscan.com/']
                                 }]
@@ -714,7 +737,6 @@
 
                 showMessage('Wallet connecté avec succès!', 'success');
 
-                // Try to load contract if address is in localStorage
                 const savedAddress = localStorage.getItem('contractAddress');
                 if (savedAddress) {
                     document.getElementById('contractAddress').value = savedAddress;
@@ -767,12 +789,14 @@
                 document.getElementById('perHourAmount').textContent = kingdom.perHour.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                 document.getElementById('alliesCount').textContent = kingdom.alliesCount.toString();
 
-                // Load building grid with numbers
+                // Load building grid (avec numéros jaunes)
                 renderBuildingGrid(kingdom.tiles);
 
                 // Check battle cooldown
                 updateBattleCooldown(kingdom.battleTime);
 
+                // Lance la simulation immédiatement après chargement
+                updatePassiveSimulated();
             } catch (error) {
                 console.error(error);
                 showMessage('Erreur lors du chargement des données: ' + error.message, 'error');
@@ -834,7 +858,7 @@
             const cooldownDiv = document.getElementById('battleCooldown');
             const now = Math.floor(Date.now() / 1000);
             const timeSinceLastBattle = now - lastBattleTime;
-            const cooldownDuration = 86400; // 24 hours
+            const cooldownDuration = 86400;
 
             if (timeSinceLastBattle < cooldownDuration) {
                 const timeRemaining = cooldownDuration - timeSinceLastBattle;
@@ -847,47 +871,60 @@
             }
         }
 
-        // Contract Functions
-        async function buyGold() {
-            if (!contract) {
-                showMessage('Veuillez configurer l\'adresse du contrat', 'error');
-                return;
+        // Simulation gratuite du passif (sans gas)
+        async function updatePassiveSimulated() {
+            if (!contract || !userAddress) return;
+
+            try {
+                const kingdom = await contract.getKingdom(userAddress);
+                lastClaimTime = Number(kingdom.claimTime);
+                perHourCached = Number(kingdom.perHour);
+
+                const now = Math.floor(Date.now() / 1000);
+                const hoursPassed = Math.floor((now - lastClaimTime) / 3600);
+
+                if (hoursPassed > 0) {
+                    const earned = hoursPassed * perHourCached;
+                    const currentGems = Number(document.getElementById('gemsAmount').textContent.replace(/,/g, '')) || 0;
+                    const currentGold = Number(document.getElementById('goldAmount').textContent.replace(/,/g, '')) || 0;
+
+                    document.getElementById('gemsAmount').textContent = (currentGems + earned).toLocaleString();
+                    document.getElementById('goldAmount').textContent = (currentGold + earned).toLocaleString();
+                }
+            } catch (err) {
+                console.log("Erreur simu :", err);
             }
+        }
+
+        // Lance la simulation toutes les 60 secondes
+        setInterval(updatePassiveSimulated, 60000);
+
+        // Contract Functions (inchangées)
+        async function buyGold() {
+            if (!contract) return showMessage('Veuillez configurer l\'adresse du contrat', 'error');
 
             const bnbAmount = document.getElementById('bnbAmount').value;
             const allyAddress = document.getElementById('allyAddress').value.trim() || ethers.constants.AddressZero;
 
-            if (!bnbAmount || parseFloat(bnbAmount) <= 0) {
-                showMessage('Montant invalide', 'error');
-                return;
-            }
+            if (!bnbAmount || parseFloat(bnbAmount) <= 0) return showMessage('Montant invalide', 'error');
 
             try {
                 showMessage('Transaction en cours...', 'info');
-                const tx = await contract.buyGold(allyAddress, {
-                    value: ethers.utils.parseEther(bnbAmount)
-                });
+                const tx = await contract.buyGold(allyAddress, { value: ethers.utils.parseEther(bnbAmount) });
                 await tx.wait();
                 showMessage('Or acheté avec succès!', 'success');
                 await loadKingdomData();
             } catch (error) {
-                console.error(error);
                 showMessage('Erreur: ' + (error.reason || error.message), 'error');
             }
         }
 
         async function sellGems() {
-            if (!contract) {
-                showMessage('Veuillez configurer l\'adresse du contrat', 'error');
-                return;
-            }
+            if (!contract) return showMessage('Veuillez configurer l\'adresse du contrat', 'error');
 
             const gemsAmount = document.getElementById('sellGemsAmount').value;
 
-            if (!gemsAmount || parseInt(gemsAmount) <= 0) {
-                showMessage('Montant invalide', 'error');
-                return;
-            }
+            if (!gemsAmount || parseInt(gemsAmount) <= 0) return showMessage('Montant invalide', 'error');
 
             try {
                 showMessage('Transaction en cours...', 'info');
@@ -896,23 +933,16 @@
                 showMessage('Gemmes vendues avec succès!', 'success');
                 await loadKingdomData();
             } catch (error) {
-                console.error(error);
                 showMessage('Erreur: ' + (error.reason || error.message), 'error');
             }
         }
 
         async function swapGemsToGold() {
-            if (!contract) {
-                showMessage('Veuillez configurer l\'adresse du contrat', 'error');
-                return;
-            }
+            if (!contract) return showMessage('Veuillez configurer l\'adresse du contrat', 'error');
 
             const gemsAmount = document.getElementById('swapGemsAmount').value;
 
-            if (!gemsAmount || parseInt(gemsAmount) <= 0) {
-                showMessage('Montant invalide', 'error');
-                return;
-            }
+            if (!gemsAmount || parseInt(gemsAmount) <= 0) return showMessage('Montant invalide', 'error');
 
             try {
                 showMessage('Transaction en cours...', 'info');
@@ -921,21 +951,14 @@
                 showMessage('Gemmes échangées avec succès!', 'success');
                 await loadKingdomData();
             } catch (error) {
-                console.error(error);
                 showMessage('Erreur: ' + (error.reason || error.message), 'error');
             }
         }
 
         async function placeBuildings() {
-            if (!contract) {
-                showMessage('Veuillez configurer l\'adresse du contrat', 'error');
-                return;
-            }
+            if (!contract) return showMessage('Veuillez configurer l\'adresse du contrat', 'error');
 
-            if (selectedTiles.size === 0) {
-                showMessage('Sélectionnez au moins une case', 'error');
-                return;
-            }
+            if (selectedTiles.size === 0) return showMessage('Sélectionnez au moins une case', 'error');
 
             const level = document.getElementById('buildingLevel').value;
             const tileIds = Array.from(selectedTiles);
@@ -948,23 +971,16 @@
                 clearSelection();
                 await loadKingdomData();
             } catch (error) {
-                console.error(error);
                 showMessage('Erreur: ' + (error.reason || error.message), 'error');
             }
         }
 
         async function upgradeBuilding() {
-            if (!contract) {
-                showMessage('Veuillez configurer l\'adresse du contrat', 'error');
-                return;
-            }
+            if (!contract) return showMessage('Veuillez configurer l\'adresse du contrat', 'error');
 
             const tileId = document.getElementById('upgradeTileId').value;
 
-            if (tileId === '' || parseInt(tileId) < 0 || parseInt(tileId) > 359) {
-                showMessage('ID de case invalide', 'error');
-                return;
-            }
+            if (tileId === '' || parseInt(tileId) < 0 || parseInt(tileId) > 359) return showMessage('ID de case invalide', 'error');
 
             try {
                 showMessage('Transaction en cours...', 'info');
@@ -973,30 +989,22 @@
                 showMessage('Bâtiment amélioré avec succès!', 'success');
                 await loadKingdomData();
             } catch (error) {
-                console.error(error);
                 showMessage('Erreur: ' + (error.reason || error.message), 'error');
             }
         }
 
         async function startBattle() {
-            if (!contract) {
-                showMessage('Veuillez configurer l\'adresse du contrat', 'error');
-                return;
-            }
+            if (!contract) return showMessage('Veuillez configurer l\'adresse du contrat', 'error');
 
             const winChance = document.getElementById('winChance').value;
 
-            if (!winChance || parseInt(winChance) < 40 || parseInt(winChance) > 60) {
-                showMessage('Chance de victoire doit être entre 40 et 60', 'error');
-                return;
-            }
+            if (!winChance || parseInt(winChance) < 40 || parseInt(winChance) > 60) return showMessage('Chance de victoire doit être entre 40 et 60', 'error');
 
             try {
                 showMessage('Transaction en cours...', 'info');
                 const tx = await contract.battle(winChance);
                 const receipt = await tx.wait();
                 
-                // Parse battle result from events
                 const event = receipt.events.find(e => e.event === 'BattleResult');
                 if (event) {
                     const isWin = event.args.isWin;
@@ -1009,33 +1017,24 @@
                 
                 await loadKingdomData();
             } catch (error) {
-                console.error(error);
                 showMessage('Erreur: ' + (error.reason || error.message), 'error');
             }
         }
 
-        // Utility Functions
         function showMessage(text, type) {
             const container = document.getElementById('messageContainer');
             const message = document.createElement('div');
             message.className = `message ${type}`;
             message.textContent = text;
             container.appendChild(message);
-
-            setTimeout(() => {
-                message.remove();
-            }, 5000);
+            setTimeout(() => message.remove(), 5000);
         }
 
-        // Event Listeners
         document.getElementById('connectWalletBtn').addEventListener('click', connectWallet);
         document.getElementById('disconnectBtn').addEventListener('click', disconnectWallet);
 
-        // Auto-refresh every 30 seconds
         setInterval(() => {
-            if (contract && userAddress) {
-                loadKingdomData();
-            }
+            if (contract && userAddress) loadKingdomData();
         }, 30000);
     </script>
 </body>
