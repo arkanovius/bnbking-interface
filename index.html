@@ -21,433 +21,193 @@
             --success: #2ed573;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin:0; padding:0; box-sizing:border-box; }
 
         body {
-            font-family: 'Karla', sans-serif;
-            background: linear-gradient(135deg, var(--bg-dark) 0%, #1a0f2e 100%);
-            color: var(--text-light);
-            min-height: 100vh;
-            position: relative;
-            overflow-x: hidden;
+            font-family:'Karla',sans-serif;
+            background:linear-gradient(135deg,var(--bg-dark),#1a0f2e);
+            color:var(--text-light);
+            min-height:100vh;
+            position:relative;
+            overflow-x:hidden;
         }
 
         body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 30%, rgba(255, 215, 0, 0.03) 0%, transparent 40%),
-                radial-gradient(circle at 80% 70%, rgba(64, 224, 208, 0.03) 0%, transparent 40%);
-            pointer-events: none;
-            z-index: 0;
+            content:'';
+            position:fixed;
+            inset:0;
+            background:radial-gradient(circle at 20% 30%,rgba(255,215,0,0.03) 0%,transparent 40%),
+                       radial-gradient(circle at 80% 70%,rgba(64,224,208,0.03) 0%,transparent 40%);
+            pointer-events:none;
+            z-index:-1;
         }
 
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-            position: relative;
-            z-index: 1;
-        }
+        .container { max-width:1400px; margin:0 auto; padding:20px; position:relative; z-index:1; }
 
         header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 30px 0;
-            border-bottom: 2px solid var(--border);
-            margin-bottom: 40px;
-            flex-wrap: wrap;
-            gap: 20px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            padding:30px 0;
+            border-bottom:2px solid var(--border);
+            margin-bottom:40px;
+            flex-wrap:wrap;
+            gap:20px;
         }
 
         h1 {
-            font-family: 'Cinzel', serif;
-            font-size: 2.5em;
-            font-weight: 900;
-            background: linear-gradient(135deg, var(--gold) 0%, var(--dark-gold) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: 2px;
-            text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+            font-family:'Cinzel',serif;
+            font-size:2.5em;
+            font-weight:900;
+            background:linear-gradient(135deg,var(--gold),var(--dark-gold));
+            -webkit-background-clip:text;
+            -webkit-text-fill-color:transparent;
+            letter-spacing:2px;
+            text-shadow:0 0 30px rgba(255,215,0,0.3);
         }
 
-        .wallet-section {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
+        .wallet-section { display:flex; gap:15px; align-items:center; flex-wrap:wrap; }
 
         button {
-            padding: 12px 28px;
-            border: 2px solid var(--gold);
-            background: linear-gradient(135deg, var(--gold) 0%, var(--dark-gold) 100%);
-            color: var(--bg-dark);
-            font-weight: 600;
-            font-size: 1em;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            font-family: 'Karla', sans-serif;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            position: relative;
-            overflow: hidden;
+            padding:12px 28px;
+            border:2px solid var(--gold);
+            background:linear-gradient(135deg,var(--gold),var(--dark-gold));
+            color:var(--bg-dark);
+            font-weight:600;
+            font-size:1em;
+            cursor:pointer;
+            border-radius:8px;
+            transition:all 0.3s;
         }
 
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4);
-        }
+        button:hover { transform:translateY(-2px); box-shadow:0 10px 30px rgba(255,215,0,0.4); }
 
-        button:active {
-            transform: translateY(0);
-        }
-
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        button.secondary {
-            background: linear-gradient(135deg, var(--gem) 0%, var(--dark-gem) 100%);
-            border-color: var(--gem);
-        }
-
-        button.secondary:hover {
-            box-shadow: 0 10px 30px rgba(64, 224, 208, 0.4);
-        }
-
-        button.danger {
-            background: linear-gradient(135deg, var(--danger) 0%, #c23616 100%);
-            border-color: var(--danger);
-            color: white;
-        }
+        button:disabled { opacity:0.5; cursor:not-allowed; }
 
         .wallet-address {
-            padding: 10px 20px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-family: monospace;
-            font-size: 0.9em;
-            color: var(--text-dim);
+            padding:10px 20px;
+            background:var(--bg-card);
+            border:1px solid var(--border);
+            border-radius:8px;
+            font-family:monospace;
+            font-size:0.9em;
+            color:var(--text-dim);
         }
 
         .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+            gap:20px;
+            margin-bottom:40px;
         }
 
         .stat-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 25px;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
+            background:var(--bg-card);
+            border:1px solid var(--border);
+            border-radius:12px;
+            padding:25px;
+            position:relative;
+            overflow:hidden;
         }
 
         .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: linear-gradient(90deg, var(--gold) 0%, var(--gem) 100%);
+            content:'';
+            position:absolute;
+            top:0;left:0;right:0;
+            height:3px;
+            background:linear-gradient(90deg,var(--gold),var(--gem));
         }
 
-        .stat-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--gold);
-            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.2);
-        }
+        .stat-label { font-size:0.9em; color:var(--text-dim); text-transform:uppercase; margin-bottom:10px; }
 
-        .stat-label {
-            font-size: 0.9em;
-            color: var(--text-dim);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 10px;
-        }
+        .stat-value { font-size:2em; font-weight:700; font-family:'Cinzel',serif; }
 
-        .stat-value {
-            font-size: 2em;
-            font-weight: 700;
-            font-family: 'Cinzel', serif;
-        }
+        .stat-value.gold { color:var(--gold); text-shadow:0 0 20px rgba(255,215,0,0.5); }
+        .stat-value.gem  { color:var(--gem);  text-shadow:0 0 20px rgba(64,224,208,0.5); }
 
-        .stat-value.gold {
-            color: var(--gold);
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
-        }
-
-        .stat-value.gem {
-            color: var(--gem);
-            text-shadow: 0 0 20px rgba(64, 224, 208, 0.5);
+        .gems-conversion {
+            margin-top:12px;
+            font-size:1.1em;
+            color:var(--gem);
+            text-align:center;
+            background:rgba(64,224,208,0.1);
+            border:1px solid var(--gem);
+            border-radius:8px;
+            padding:10px;
         }
 
         .section {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 30px;
-            margin-bottom: 30px;
-            animation: fadeIn 0.5s ease;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            background:var(--bg-card);
+            border:1px solid var(--border);
+            border-radius:12px;
+            padding:30px;
+            margin-bottom:30px;
         }
 
         .section-title {
-            font-family: 'Cinzel', serif;
-            font-size: 1.8em;
-            margin-bottom: 25px;
-            color: var(--gold);
-            border-bottom: 2px solid var(--border);
-            padding-bottom: 15px;
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--text-dim);
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.85em;
-            letter-spacing: 1px;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 14px;
-            background: var(--bg-dark);
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            color: var(--text-light);
-            font-size: 1em;
-            font-family: 'Karla', sans-serif;
-            transition: all 0.3s ease;
-        }
-
-        input:focus, select:focus {
-            outline: none;
-            border-color: var(--gold);
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
-        }
-
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+            font-family:'Cinzel',serif;
+            font-size:1.8em;
+            margin-bottom:25px;
+            color:var(--gold);
+            border-bottom:2px solid var(--border);
+            padding-bottom:15px;
         }
 
         .building-grid {
-            display: grid;
-            grid-template-columns: repeat(20, 1fr);
-            gap: 2px;
-            background: var(--bg-dark);
-            padding: 10px;
-            border-radius: 8px;
-            margin-top: 20px;
-            max-width: 100%;
-            overflow-x: auto;
+            display:grid;
+            grid-template-columns:repeat(20,1fr);
+            gap:2px;
+            background:var(--bg-dark);
+            padding:10px;
+            border-radius:8px;
+            margin-top:20px;
+            max-width:100%;
+            overflow-x:auto;
         }
 
         .tile {
-            aspect-ratio: 1;
-            background: var(--border);
-            border: 1px solid var(--bg-dark);
-            cursor: pointer;
-            transition: all 0.2s ease;
-            position: relative;
-            min-width: 20px;
+            aspect-ratio:1;
+            background:var(--border);
+            border:1px solid var(--bg-dark);
+            position:relative;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:0.7em;
+            color:#8892a6;
         }
 
-        .tile:hover {
-            background: var(--gold);
-            transform: scale(1.1);
-            z-index: 10;
-        }
+        .tile:hover { background:#3a4f6f; transform:scale(1.05); }
 
         .tile.occupied {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--dark-gold) 100%);
-            cursor: default;
+            background:linear-gradient(135deg,var(--gold),var(--dark-gold));
+            color:var(--bg-dark);
+            font-weight:bold;
         }
 
-        .tile.selected {
-            background: var(--gem);
-            box-shadow: 0 0 10px var(--gem);
-        }
-
-        .tile.occupied .level {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 0.7em;
-            font-weight: bold;
-            color: var(--bg-dark);
-        }
-
-        /* Numéro de case en jaune (0 à 359), haut gauche */
         .tile-number {
-            position: absolute;
-            top: 4px;
-            left: 4px;
-            font-size: 0.65em;
-            font-weight: bold;
-            color: var(--gold); /* Jaune comme demandé */
-            text-shadow: 0 0 3px rgba(0,0,0,0.8);
-            pointer-events: none;
-            z-index: 5;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid var(--border);
-            border-top-color: var(--gold);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin-left: 10px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+            position:absolute;
+            top:4px;
+            left:4px;
+            font-size:0.65em;
+            font-weight:bold;
+            color:var(--gold);
+            text-shadow:0 0 3px rgba(0,0,0,0.8);
+            pointer-events:none;
+            z-index:5;
         }
 
         .message {
-            padding: 15px 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-weight: 600;
-            animation: slideIn 0.3s ease;
+            padding:15px 20px;
+            border-radius:8px;
+            margin:20px 0;
+            font-weight:600;
         }
 
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
+        .success { background:rgba(46,213,115,0.2); border:1px solid var(--success); color:var(--success); }
+        .error   { background:rgba(255,71,87,0.2); border:1px solid var(--danger);   color:var(--danger);   }
 
-        .message.success {
-            background: rgba(46, 213, 115, 0.2);
-            border: 1px solid var(--success);
-            color: var(--success);
-        }
-
-        .message.error {
-            background: rgba(255, 71, 87, 0.2);
-            border: 1px solid var(--danger);
-            color: var(--danger);
-        }
-
-        .message.info {
-            background: rgba(64, 224, 208, 0.2);
-            border: 1px solid var(--gem);
-            color: var(--gem);
-        }
-
-        .battle-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-        }
-
-        @media (max-width: 768px) {
-            .battle-section {
-                grid-template-columns: 1fr;
-            }
-            
-            h1 {
-                font-size: 1.8em;
-            }
-            
-            .building-grid {
-                grid-template-columns: repeat(18, 1fr);
-            }
-        }
-
-        .info-box {
-            background: rgba(64, 224, 208, 0.1);
-            border: 1px solid var(--gem);
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 20px;
-            font-size: 0.9em;
-            line-height: 1.6;
-        }
-
-        .cooldown-timer {
-            font-size: 1.2em;
-            color: var(--danger);
-            font-weight: bold;
-            margin: 10px 0;
-        }
-
-        .ally-input-group {
-            display: flex;
-            gap: 10px;
-            align-items: flex-end;
-        }
-
-        .ally-input-group input {
-            flex: 1;
-        }
-
-        footer {
-            text-align: center;
-            padding: 30px;
-            margin-top: 50px;
-            border-top: 1px solid var(--border);
-            color: var(--text-dim);
-            font-size: 0.9em;
-        }
-
-        .hidden {
-            display: none;
-        }
+        .hidden { display:none; }
     </style>
 </head>
 <body>
@@ -465,13 +225,13 @@
 
         <div id="notConnected" class="section">
             <h2 class="section-title">Bienvenue sur BNBKing</h2>
-            <p style="line-height: 1.8; color: var(--text-dim);">
+            <p style="line-height:1.8;color:var(--text-dim);">
                 Connectez votre wallet Metamask ou Rabby pour accéder à votre royaume, 
                 retirer vos gems, construire et améliorer vos bâtiments, et participer aux batailles.
             </p>
-            <div style="margin-top: 20px;">
-                <p style="margin-bottom: 10px; font-weight: 600;">⚠️ Important :</p>
-                <ul style="list-style: none; line-height: 2;">
+            <div style="margin-top:20px;">
+                <p style="margin-bottom:10px;font-weight:600;">⚠️ Important :</p>
+                <ul style="list-style:none;line-height:2;">
                     <li>✓ Assurez-vous d'être sur le réseau BSC (Binance Smart Chain)</li>
                     <li>✓ L'adresse du contrat sera configurée après connexion</li>
                     <li>✓ Toutes les transactions nécessitent du BNB pour les frais de gas</li>
@@ -480,7 +240,7 @@
         </div>
 
         <div id="gameInterface" class="hidden">
-            <!-- Stats -->
+            <!-- Stats + Conversion -->
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-label">💰 Or (Gold)</div>
@@ -489,6 +249,7 @@
                 <div class="stat-card">
                     <div class="stat-label">💎 Gemmes (Gems)</div>
                     <div class="stat-value gem" id="gemsAmount">0</div>
+                    <div class="gems-conversion" id="gemsValue">≈ 0.000000 BNB (~0.00 USDT)</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-label">⚡ Production / Heure</div>
@@ -506,12 +267,12 @@
                 <div class="input-group">
                     <label>Montant BNB à déposer</label>
                     <input type="number" id="bnbAmount" placeholder="0.1" step="0.01" min="0">
-                    <small style="color: var(--text-dim); margin-top: 5px; display: block;">
+                    <small style="color:var(--text-dim);margin-top:5px;display:block;">
                         Taux de conversion: 1 BNB = 1,000,000 Gold
                     </small>
                 </div>
                 <div class="ally-input-group">
-                    <div style="flex: 1;">
+                    <div style="flex:1;">
                         <label>Adresse Allié (optionnel)</label>
                         <input type="text" id="allyAddress" placeholder="0x...">
                     </div>
@@ -530,7 +291,7 @@
                         <label>Nombre de gemmes à vendre</label>
                         <input type="number" id="sellGemsAmount" placeholder="100000" step="1000" min="0">
                     </div>
-                    <button onclick="sellGems()" style="width: 100%;">Vendre des Gemmes</button>
+                    <button onclick="sellGems()" style="width:100%;">Vendre des Gemmes</button>
                 </div>
 
                 <div class="section">
@@ -542,7 +303,7 @@
                         <label>Nombre de gemmes à échanger</label>
                         <input type="number" id="swapGemsAmount" placeholder="10000" step="1000" min="0">
                     </div>
-                    <button onclick="swapGemsToGold()" class="secondary" style="width: 100%;">Échanger</button>
+                    <button onclick="swapGemsToGold()" class="secondary" style="width:100%;">Échanger</button>
                 </div>
             </div>
 
@@ -605,11 +366,11 @@
                     <div class="input-group">
                         <label>Chance de victoire (40-60%)</label>
                         <input type="number" id="winChance" placeholder="50" min="40" max="60" value="50">
-                        <small style="color: var(--text-dim); margin-top: 5px; display: block;">
+                        <small style="color:var(--text-dim);margin-top:5px;display:block;">
                             Plus faible = meilleure récompense si victoire
                         </small>
                     </div>
-                    <button onclick="startBattle()" style="height: fit-content; align-self: flex-end;">Lancer la Bataille</button>
+                    <button onclick="startBattle()" style="height:fit-content;align-self:flex-end;">Lancer la Bataille</button>
                 </div>
             </div>
 
@@ -619,7 +380,7 @@
                 <div class="input-group">
                     <label>Adresse du contrat BNBKing</label>
                     <input type="text" id="contractAddress" placeholder="0xC1e3621427ad5E90Bc50eBCa38bd89AEB9953ACd">
-                    <small style="color: var(--text-dim); margin-top: 5px; display: block;">
+                    <small style="color:var(--text-dim);margin-top:5px;display:block;">
                         Entrez l'adresse du smart contract déployé sur BSC
                     </small>
                 </div>
@@ -629,7 +390,7 @@
 
         <footer>
             <p>BNBKing - Interface Communautaire | BSC Network</p>
-            <p style="margin-top: 10px; font-size: 0.85em;">
+            <p style="margin-top:10px;font-size:0.85em;">
                 ⚠️ Assurez-vous d'être connecté au réseau BSC (Chain ID: 56)
             </p>
         </footer>
@@ -642,8 +403,8 @@
         let contract;
         let userAddress;
         let selectedTiles = new Set();
-        
-        // ----- AJOUT 1 : Simulation gratuite gems/gold (sans gas) -----
+
+        // ----- Simulation gratuite gems/gold (sans gas) -----
         let lastClaimTime = 0;
         let perHourCached = 0;
 
@@ -665,15 +426,38 @@
 
                     document.getElementById('gemsAmount').textContent = (currentGems + earned).toLocaleString();
                     document.getElementById('goldAmount').textContent = (currentGold + earned).toLocaleString();
+
+                    updateGemsConversion(); // Mise à jour conversion live
                 }
             } catch (err) {
                 console.log("Erreur simu :", err);
             }
         }
 
-        // Lance la simulation toutes les 60 secondes
         setInterval(updatePassiveSimulated, 60000);
-        // ----- FIN AJOUT 1 -----
+
+        // ----- CONVERSION GEMS → BNB / USDT -----
+        let bnbPriceUSD = 600; // Valeur par défaut (février 2026 approx)
+
+        async function updateGemsConversion() {
+            const gemsText = document.getElementById('gemsAmount').textContent.replace(/,/g, '');
+            const gems = Number(gemsText) || 0;
+
+            const bnbValue = gems / 1000000;
+            const usdtValue = bnbValue * bnbPriceUSD;
+
+            document.getElementById('gemsValue').textContent = 
+                `≈ ${bnbValue.toFixed(6)} BNB (~${usdtValue.toFixed(2)} USDT)`;
+
+            // Rafraîchir prix BNB (CoinGecko gratuit)
+            try {
+                const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd');
+                const data = await res.json();
+                bnbPriceUSD = data.binancecoin?.usd || bnbPriceUSD;
+            } catch (e) {
+                console.log("Prix BNB non mis à jour", e);
+            }
+        }
 
         const CONTRACT_ABI = [
             "function buyGold(address _ally) external payable",
@@ -691,21 +475,14 @@
             "event BattleResult(address indexed king, bool isWin, uint8 winChance, uint256 battleReward)"
         ];
 
-        // Wallet Connection
         async function connectWallet() {
             try {
-                if (typeof window.ethereum === 'undefined') {
-                    showMessage('Veuillez installer Metamask ou Rabby Wallet', 'error');
-                    return;
-                }
+                if (!window.ethereum) throw new Error("Installe MetaMask ou Rabby !");
 
                 const chainId = await window.ethereum.request({ method: 'eth_chainId' });
                 if (chainId !== '0x38') {
                     try {
-                        await window.ethereum.request({
-                            method: 'wallet_switchEthereumChain',
-                            params: [{ chainId: '0x38' }],
-                        });
+                        await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0x38' }] });
                     } catch (switchError) {
                         if (switchError.code === 4902) {
                             await window.ethereum.request({
@@ -728,7 +505,7 @@
                 userAddress = await signer.getAddress();
 
                 document.getElementById('walletAddress').textContent = 
-                    userAddress.substring(0, 6) + '...' + userAddress.substring(38);
+                    userAddress.substring(0,6) + '...' + userAddress.substring(38);
                 document.getElementById('walletAddress').classList.remove('hidden');
                 document.getElementById('disconnectBtn').classList.remove('hidden');
                 document.getElementById('connectWalletBtn').classList.add('hidden');
@@ -743,81 +520,62 @@
                     await setContractAddress();
                 }
             } catch (error) {
-                console.error(error);
                 showMessage('Erreur de connexion: ' + error.message, 'error');
             }
         }
 
         function disconnectWallet() {
-            provider = null;
-            signer = null;
-            contract = null;
-            userAddress = null;
-
+            provider = signer = contract = userAddress = null;
             document.getElementById('walletAddress').classList.add('hidden');
             document.getElementById('disconnectBtn').classList.add('hidden');
             document.getElementById('connectWalletBtn').classList.remove('hidden');
             document.getElementById('notConnected').classList.remove('hidden');
             document.getElementById('gameInterface').classList.add('hidden');
-
             showMessage('Wallet déconnecté', 'info');
         }
 
         async function setContractAddress() {
             const address = document.getElementById('contractAddress').value.trim();
-            if (!ethers.utils.isAddress(address)) {
-                showMessage('Adresse invalide', 'error');
-                return;
-            }
+            if (!ethers.utils.isAddress(address)) return showMessage('Adresse invalide', 'error');
 
             contract = new ethers.Contract(address, CONTRACT_ABI, signer);
             localStorage.setItem('contractAddress', address);
             showMessage('Contrat configuré avec succès', 'success');
-            
             await loadKingdomData();
         }
 
-        // Load Kingdom Data
         async function loadKingdomData() {
             if (!contract || !userAddress) return;
 
             try {
                 const kingdom = await contract.getKingdom(userAddress);
-                
                 document.getElementById('goldAmount').textContent = kingdom.gold.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                 document.getElementById('gemsAmount').textContent = kingdom.gems.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                 document.getElementById('perHourAmount').textContent = kingdom.perHour.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                 document.getElementById('alliesCount').textContent = kingdom.alliesCount.toString();
 
-                // Load building grid (avec numéros jaunes)
                 renderBuildingGrid(kingdom.tiles);
-
-                // Check battle cooldown
                 updateBattleCooldown(kingdom.battleTime);
-
-                // Lance la simulation immédiatement après chargement
-                updatePassiveSimulated();
+                updateGemsConversion(); // Conversion live
             } catch (error) {
                 console.error(error);
-                showMessage('Erreur lors du chargement des données: ' + error.message, 'error');
+                showMessage('Erreur chargement données', 'error');
             }
         }
 
         function renderBuildingGrid(tiles) {
             const grid = document.getElementById('buildingGrid');
             grid.innerHTML = '';
-            
             for (let i = 0; i < 360; i++) {
                 const tile = document.createElement('div');
                 tile.className = 'tile';
                 tile.dataset.id = i;
-                
-                // Numéro de case en jaune (toujours visible)
+
                 const number = document.createElement('div');
                 number.className = 'tile-number';
                 number.textContent = i;
                 tile.appendChild(number);
-                
+
                 if (tiles[i] > 0) {
                     tile.classList.add('occupied');
                     const level = tiles[i] % 10;
@@ -829,7 +587,6 @@
                 } else {
                     tile.onclick = () => toggleTileSelection(i);
                 }
-                
                 grid.appendChild(tile);
             }
         }
@@ -848,116 +605,78 @@
 
         function clearSelection() {
             selectedTiles.clear();
-            document.querySelectorAll('.tile.selected').forEach(tile => {
-                tile.classList.remove('selected');
-            });
+            document.querySelectorAll('.tile.selected').forEach(t => t.classList.remove('selected'));
             document.getElementById('selectedCount').textContent = 0;
         }
 
         function updateBattleCooldown(lastBattleTime) {
             const cooldownDiv = document.getElementById('battleCooldown');
             const now = Math.floor(Date.now() / 1000);
-            const timeSinceLastBattle = now - lastBattleTime;
-            const cooldownDuration = 86400;
+            const timeSince = now - lastBattleTime;
+            const cooldown = 86400;
 
-            if (timeSinceLastBattle < cooldownDuration) {
-                const timeRemaining = cooldownDuration - timeSinceLastBattle;
-                const hours = Math.floor(timeRemaining / 3600);
-                const minutes = Math.floor((timeRemaining % 3600) / 60);
-                cooldownDiv.textContent = `⏱️ Cooldown: ${hours}h ${minutes}m`;
+            if (timeSince < cooldown) {
+                const remaining = cooldown - timeSince;
+                const h = Math.floor(remaining / 3600);
+                const m = Math.floor((remaining % 3600) / 60);
+                cooldownDiv.textContent = `⏱️ Cooldown: ${h}h ${m}m`;
                 cooldownDiv.classList.remove('hidden');
             } else {
                 cooldownDiv.classList.add('hidden');
             }
         }
 
-        // Simulation gratuite du passif (sans gas)
-        async function updatePassiveSimulated() {
-            if (!contract || !userAddress) return;
-
-            try {
-                const kingdom = await contract.getKingdom(userAddress);
-                lastClaimTime = Number(kingdom.claimTime);
-                perHourCached = Number(kingdom.perHour);
-
-                const now = Math.floor(Date.now() / 1000);
-                const hoursPassed = Math.floor((now - lastClaimTime) / 3600);
-
-                if (hoursPassed > 0) {
-                    const earned = hoursPassed * perHourCached;
-                    const currentGems = Number(document.getElementById('gemsAmount').textContent.replace(/,/g, '')) || 0;
-                    const currentGold = Number(document.getElementById('goldAmount').textContent.replace(/,/g, '')) || 0;
-
-                    document.getElementById('gemsAmount').textContent = (currentGems + earned).toLocaleString();
-                    document.getElementById('goldAmount').textContent = (currentGold + earned).toLocaleString();
-                }
-            } catch (err) {
-                console.log("Erreur simu :", err);
-            }
-        }
-
-        // Lance la simulation toutes les 60 secondes
-        setInterval(updatePassiveSimulated, 60000);
-
-        // Contract Functions (inchangées)
         async function buyGold() {
-            if (!contract) return showMessage('Veuillez configurer l\'adresse du contrat', 'error');
-
-            const bnbAmount = document.getElementById('bnbAmount').value;
-            const allyAddress = document.getElementById('allyAddress').value.trim() || ethers.constants.AddressZero;
-
-            if (!bnbAmount || parseFloat(bnbAmount) <= 0) return showMessage('Montant invalide', 'error');
+            if (!contract) return showMessage('Configurez le contrat', 'error');
+            const bnb = document.getElementById('bnbAmount').value;
+            const ally = document.getElementById('allyAddress').value.trim() || ethers.constants.AddressZero;
+            if (!bnb || parseFloat(bnb) <= 0) return showMessage('Montant invalide', 'error');
 
             try {
                 showMessage('Transaction en cours...', 'info');
-                const tx = await contract.buyGold(allyAddress, { value: ethers.utils.parseEther(bnbAmount) });
+                const tx = await contract.buyGold(ally, { value: ethers.utils.parseEther(bnb) });
                 await tx.wait();
-                showMessage('Or acheté avec succès!', 'success');
+                showMessage('Or acheté !', 'success');
                 await loadKingdomData();
-            } catch (error) {
-                showMessage('Erreur: ' + (error.reason || error.message), 'error');
+            } catch (e) {
+                showMessage('Erreur: ' + (e.reason || e.message), 'error');
             }
         }
 
         async function sellGems() {
-            if (!contract) return showMessage('Veuillez configurer l\'adresse du contrat', 'error');
-
-            const gemsAmount = document.getElementById('sellGemsAmount').value;
-
-            if (!gemsAmount || parseInt(gemsAmount) <= 0) return showMessage('Montant invalide', 'error');
+            if (!contract) return showMessage('Configurez le contrat', 'error');
+            const amt = document.getElementById('sellGemsAmount').value;
+            if (!amt || parseInt(amt) <= 0) return showMessage('Montant invalide', 'error');
 
             try {
                 showMessage('Transaction en cours...', 'info');
-                const tx = await contract.sellGems(gemsAmount);
+                const tx = await contract.sellGems(amt);
                 await tx.wait();
-                showMessage('Gemmes vendues avec succès!', 'success');
+                showMessage('Gemmes vendues !', 'success');
                 await loadKingdomData();
-            } catch (error) {
-                showMessage('Erreur: ' + (error.reason || error.message), 'error');
+            } catch (e) {
+                showMessage('Erreur: ' + (e.reason || e.message), 'error');
             }
         }
 
         async function swapGemsToGold() {
-            if (!contract) return showMessage('Veuillez configurer l\'adresse du contrat', 'error');
-
-            const gemsAmount = document.getElementById('swapGemsAmount').value;
-
-            if (!gemsAmount || parseInt(gemsAmount) <= 0) return showMessage('Montant invalide', 'error');
+            if (!contract) return showMessage('Configurez le contrat', 'error');
+            const amt = document.getElementById('swapGemsAmount').value;
+            if (!amt || parseInt(amt) <= 0) return showMessage('Montant invalide', 'error');
 
             try {
                 showMessage('Transaction en cours...', 'info');
-                const tx = await contract.swapGemsToGold(gemsAmount);
+                const tx = await contract.swapGemsToGold(amt);
                 await tx.wait();
-                showMessage('Gemmes échangées avec succès!', 'success');
+                showMessage('Gemmes échangées !', 'success');
                 await loadKingdomData();
-            } catch (error) {
-                showMessage('Erreur: ' + (error.reason || error.message), 'error');
+            } catch (e) {
+                showMessage('Erreur: ' + (e.reason || e.message), 'error');
             }
         }
 
         async function placeBuildings() {
-            if (!contract) return showMessage('Veuillez configurer l\'adresse du contrat', 'error');
-
+            if (!contract) return showMessage('Configurez le contrat', 'error');
             if (selectedTiles.size === 0) return showMessage('Sélectionnez au moins une case', 'error');
 
             const level = document.getElementById('buildingLevel').value;
@@ -967,67 +686,58 @@
                 showMessage('Transaction en cours...', 'info');
                 const tx = await contract.placeBuildings(tileIds, level);
                 await tx.wait();
-                showMessage('Bâtiments construits avec succès!', 'success');
+                showMessage('Bâtiments construits !', 'success');
                 clearSelection();
                 await loadKingdomData();
-            } catch (error) {
-                showMessage('Erreur: ' + (error.reason || error.message), 'error');
+            } catch (e) {
+                showMessage('Erreur: ' + (e.reason || e.message), 'error');
             }
         }
 
         async function upgradeBuilding() {
-            if (!contract) return showMessage('Veuillez configurer l\'adresse du contrat', 'error');
-
+            if (!contract) return showMessage('Configurez le contrat', 'error');
             const tileId = document.getElementById('upgradeTileId').value;
-
-            if (tileId === '' || parseInt(tileId) < 0 || parseInt(tileId) > 359) return showMessage('ID de case invalide', 'error');
+            if (!tileId || parseInt(tileId) < 0 || parseInt(tileId) > 359) return showMessage('ID de case invalide', 'error');
 
             try {
                 showMessage('Transaction en cours...', 'info');
                 const tx = await contract.upgradeBuilding(tileId);
                 await tx.wait();
-                showMessage('Bâtiment amélioré avec succès!', 'success');
+                showMessage('Bâtiment amélioré !', 'success');
                 await loadKingdomData();
-            } catch (error) {
-                showMessage('Erreur: ' + (error.reason || error.message), 'error');
+            } catch (e) {
+                showMessage('Erreur: ' + (e.reason || e.message), 'error');
             }
         }
 
         async function startBattle() {
-            if (!contract) return showMessage('Veuillez configurer l\'adresse du contrat', 'error');
-
-            const winChance = document.getElementById('winChance').value;
-
-            if (!winChance || parseInt(winChance) < 40 || parseInt(winChance) > 60) return showMessage('Chance de victoire doit être entre 40 et 60', 'error');
+            if (!contract) return showMessage('Configurez le contrat', 'error');
+            const chance = document.getElementById('winChance').value;
+            if (!chance || parseInt(chance) < 40 || parseInt(chance) > 60) return showMessage('Chance de victoire entre 40 et 60', 'error');
 
             try {
-                showMessage('Transaction en cours...', 'info');
-                const tx = await contract.battle(winChance);
+                showMessage('Bataille en cours...', 'info');
+                const tx = await contract.battle(chance);
                 const receipt = await tx.wait();
-                
                 const event = receipt.events.find(e => e.event === 'BattleResult');
                 if (event) {
                     const isWin = event.args.isWin;
                     const reward = event.args.battleReward;
-                    showMessage(
-                        `${isWin ? '🎉 Victoire!' : '😢 Défaite'} Récompense: ${reward.toString()} Gold`,
-                        isWin ? 'success' : 'info'
-                    );
+                    showMessage(`${isWin ? '🎉 Victoire!' : '😢 Défaite'} - Récompense: ${reward} Gold`, isWin ? 'success' : 'info');
                 }
-                
                 await loadKingdomData();
-            } catch (error) {
-                showMessage('Erreur: ' + (error.reason || error.message), 'error');
+            } catch (e) {
+                showMessage('Erreur: ' + (e.reason || e.message), 'error');
             }
         }
 
         function showMessage(text, type) {
             const container = document.getElementById('messageContainer');
-            const message = document.createElement('div');
-            message.className = `message ${type}`;
-            message.textContent = text;
-            container.appendChild(message);
-            setTimeout(() => message.remove(), 5000);
+            const msg = document.createElement('div');
+            msg.className = `message ${type}`;
+            msg.textContent = text;
+            container.appendChild(msg);
+            setTimeout(() => msg.remove(), 5000);
         }
 
         document.getElementById('connectWalletBtn').addEventListener('click', connectWallet);
