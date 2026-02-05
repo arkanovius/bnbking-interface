@@ -423,7 +423,7 @@
             <div class="section">
                 <h2 class="section-title">🏰 Construire & Améliorer</h2>
                 <div class="info-box">
-                    💡 Mode "Construire" : cliquez directement sur les cases grises (vides) pour les sélectionner (plusieurs possibles).<br>
+                    💡 Mode "Construire" : cliquez sur les cases vides (grises) pour les sélectionner (plusieurs possibles).<br>
                     Mode "Améliorer" : cliquez sur une case jaune pour la sélectionner, puis cliquez sur "Améliorer cette case".<br>
                     Cases jaunes = déjà occupées.
                 </div>
@@ -507,8 +507,8 @@
 
     <script>
         let provider, signer, contract, userAddress;
-        let selectedTiles = new Set();       // pour mode "place" (multi)
-        let upgradeTile = null;              // pour mode "upgrade" (unique)
+        let selectedTiles = new Set();       // cases sélectionnées en mode "place"
+        let upgradeTile = null;              // case sélectionnée en mode "upgrade"
         let currentMode = "place";           // "place" ou "upgrade"
 
         let lastClaimTime = 0;
@@ -653,10 +653,10 @@
                 document.getElementById('perHourAmount').textContent = k.perHour.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                 document.getElementById('alliesCount').textContent = k.alliesCount.toString();
 
-                // Sauvegarde globale pour la grille interactive
-                window.currentKingdomTiles = k.tiles;
+                // Sauvegarde pour la grille interactive
+                window.currentTiles = Array.from(k.tiles).map(Number);
 
-                renderBuildingGrid(k.tiles);
+                renderBuildingGrid(window.currentTiles);
                 updateBattleCooldown(k.battleTime);
                 updateGemsConversion();
             } catch (err) {
@@ -692,7 +692,7 @@
                     tile.onclick = () => handleTileClick(i);
                 }
 
-                // Appliquer la sélection visuelle selon le mode actuel
+                // Sélection visuelle selon mode
                 if (currentMode === 'place' && selectedTiles.has(i)) {
                     tile.classList.add('selected-place');
                 }
@@ -708,11 +708,13 @@
         }
 
         function handleTileClick(id) {
-            if (currentMode === 'place') {
-                // Sélection multiple sur cases vides
-                if (window.currentKingdomTiles[id] !== 0) return; // déjà occupée
+            const tile = document.querySelector(`.tile[data-id="${id}"]`);
+            if (!tile) return;
 
-                const tile = document.querySelector(`.tile[data-id="${id}"]`);
+            if (currentMode === 'place') {
+                // Cases vides seulement
+                if (window.currentTiles[id] !== 0) return;
+
                 if (selectedTiles.has(id)) {
                     selectedTiles.delete(id);
                     tile.classList.remove('selected-place');
@@ -720,15 +722,14 @@
                     selectedTiles.add(id);
                     tile.classList.add('selected-place');
                 }
-            } 
-            else if (currentMode === 'upgrade') {
-                // Sélection unique sur case occupée
-                if (window.currentKingdomTiles[id] === 0) return; // vide
+            } else if (currentMode === 'upgrade') {
+                // Cases occupées seulement
+                if (window.currentTiles[id] === 0) return;
 
                 upgradeTile = (upgradeTile === id) ? null : id;
 
-                // Re-render pour mettre à jour les bordures
-                renderBuildingGrid(window.currentKingdomTiles);
+                // Re-render pour mettre à jour visuel
+                renderBuildingGrid(window.currentTiles);
             }
 
             document.getElementById('selectedCount').textContent = selectedTiles.size;
@@ -746,18 +747,17 @@
                 selectedTiles.clear();
                 document.getElementById('placeControls').style.display = 'none';
                 document.getElementById('upgradeControls').style.display = 'flex';
+                document.getElementById('upgradeTileId').textContent = 'aucune';
             }
 
             document.getElementById('selectedCount').textContent = selectedTiles.size;
-            document.getElementById('upgradeTileId').textContent = upgradeTile !== null ? upgradeTile : 'aucune';
-
-            renderBuildingGrid(window.currentKingdomTiles || []);
+            renderBuildingGrid(window.currentTiles || []);
         }
 
         function clearSelection() {
             selectedTiles.clear();
             document.getElementById('selectedCount').textContent = 0;
-            renderBuildingGrid(window.currentKingdomTiles || []);
+            renderBuildingGrid(window.currentTiles || []);
         }
 
         async function placeBuildings() {
@@ -796,14 +796,14 @@
             }
         }
 
-        // ─── Le reste de ton script original reste IDENTIQUE ───────────────────
-        // Colle ici toutes les autres fonctions : buyGold, sellGems, swapGemsToGold, startBattle, updateBattleCooldown, showMessage, etc.
-        // (je ne les remets pas ici pour ne pas allonger inutilement, mais tu les gardes telles quelles)
+        // ─── Le reste de ton script original ───────────────────────────────────
+        // (buyGold, sellGems, swapGemsToGold, startBattle, updateBattleCooldown, showMessage, etc.)
+        // Colle ici toutes les autres fonctions de ton code original, elles restent inchangées
 
-        // Init au chargement
+        // Init modes
         setMode('place');
 
-        // Événements existants
+        // Événements
         document.getElementById('connectWalletBtn').onclick = connectWallet;
         document.getElementById('disconnectBtn').onclick = disconnectWallet;
 
