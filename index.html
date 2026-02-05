@@ -1,797 +1,453 @@
-import { useEffect, useMemo, useState } from "react";
-import { BrowserProvider, Contract, JsonRpcProvider, formatEther } from "ethers";
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BNBKing - Interface Simple</title>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <style>
+    :root {
+      --primary: #16a34a;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --purple: #a855f7;
+      --bg: #0f172a;
+      --card: #1e293b;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+    }
+    body {
+      margin: 0;
+      font-family: system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 20px;
+      line-height: 1.5;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    h1 { margin: 0; font-size: 1.8rem; }
+    .wallet-info {
+      padding: 8px 12px;
+      background: var(--card);
+      border-radius: 12px;
+      border: 1px solid #334155;
+      font-size: 0.9rem;
+    }
+    button {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    button:hover { opacity: 0.92; transform: translateY(-1px); }
+    .connect    { background: var(--primary); color: white; }
+    .switch     { background: #334155; color: white; }
+    .sell       { background: #0ea5e9; color: white; }
+    .battle     { background: var(--danger); color: white; }
+    .place      { background: var(--warning); color: black; }
+    .upgrade    { background: var(--purple); color: white; }
+    .clear      { background: #475569; color: white; }
 
-/** Contrat */
-const CONTRACT_ADDRESS = "0x864EE1d1B51306e30836B84AdE81e39ebB6e8e0C";
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin: 16px 0; }
+    .card {
+      background: var(--card);
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .section { margin-bottom: 32px; }
+    h2 { margin: 0 0 12px; font-size: 1.3rem; }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 8px;
+      border: 1px solid #475569;
+      background: #0f172a;
+      color: white;
+      font-size: 1rem;
+    }
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(22px, 1fr));
+      gap: 4px;
+      max-width: 500px;
+      margin-top: 12px;
+    }
+    .tile {
+      aspect-ratio: 1;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 4px;
+      display: grid;
+      place-items: center;
+      font-size: 0.75rem;
+      cursor: pointer;
+      user-select: none;
+    }
+    .tile.occupied { background: #334155; cursor: default; }
+    .tile.selected-build { outline: 2px solid var(--warning); }
+    .tile.selected-upgrade { outline: 2px solid var(--purple); }
+    .status { margin: 12px 0; padding: 10px; border-radius: 8px; }
+    .success { background: rgba(34,197,94,0.15); color: #86efac; }
+    .error   { background: rgba(239,68,68,0.15); color: #fca5a5; }
+    .muted   { color: var(--muted); font-size: 0.9rem; }
+  </style>
+</head>
+<body>
 
-/** BSC Mainnet */
-const BSC_CHAIN_ID_DEC = 56;
-const BSC_CHAIN_ID_HEX = "0x38";
+<div class="container">
 
-/** RPC lecture (fallback si wallet pas connecté) */
-const BSC_RPC = "https://bsc-dataseed.bnbchain.org";
+  <header>
+    <h1>BNBKing</h1>
+    <div>
+      <div id="walletInfo" class="wallet-info" style="display:none;"></div>
+      <button class="connect" id="connectBtn">Connect Wallet</button>
+      <button class="switch" id="switchBtn" style="display:none;">Switch BSC</button>
+    </div>
+  </header>
 
-/** ABI minimal (getKingdom + actions write) */
-const ABI = [
-  {
-    inputs: [{ internalType: "address", name: "_player", type: "address" }],
-    name: "getKingdom",
-    outputs: [
-      {
-        components: [
-          { internalType: "uint32", name: "gold", type: "uint32" },
-          { internalType: "uint32", name: "gems", type: "uint32" },
-          { internalType: "uint32", name: "perHour", type: "uint32" },
-          { internalType: "uint32", name: "alliesCount", type: "uint32" },
-          { internalType: "uint32", name: "alliesEarned", type: "uint32" },
-          { internalType: "uint32", name: "claimTime", type: "uint32" },
-          { internalType: "uint32", name: "battleTime", type: "uint32" },
-          { internalType: "uint16", name: "battleId", type: "uint16" },
-          { internalType: "uint8", name: "battlesInRow", type: "uint8" },
-          { internalType: "bool", name: "isWinInRow", type: "bool" },
-          { internalType: "address", name: "ally", type: "address" },
-          { internalType: "uint8[360]", name: "tiles", type: "uint8[360]" }
-        ],
-        internalType: "struct Kingdom",
-        name: "",
-        type: "tuple"
+  <div id="status" class="status"></div>
+  <div id="error" class="status error" style="display:none;"></div>
+
+  <div class="section card">
+    <h2>Kingdom</h2>
+    <div class="grid-3" id="stats">
+      <div><strong>Gold</strong><br><span id="gold">—</span></div>
+      <div><strong>Gems</strong><br><span id="gems">—</span></div>
+      <div><strong>Per hour</strong><br><span id="perHour">—</span></div>
+      <div><strong>Alliés</strong><br><span id="allies">—</span></div>
+      <div><strong>Ally</strong><br><span id="ally">—</span></div>
+    </div>
+  </div>
+
+  <div class="section card">
+    <h2>Actions</h2>
+
+    <!-- Vendre Gems -->
+    <div style="margin-bottom:20px;">
+      <label>Vendre Gems → BNB</label>
+      <input id="sellAmount" placeholder="ex: 10000" type="number"/>
+      <button class="sell" onclick="sellGems()">Sell Gems</button>
+    </div>
+
+    <!-- Battle -->
+    <div style="margin-bottom:20px;">
+      <label>Battle (cooldown 24h)</label>
+      <div id="battleStatus" class="muted">—</div>
+      <label>Win chance (40–60)</label>
+      <input id="winChance" type="number" min="40" max="60" value="50"/>
+      <button class="battle" onclick="doBattle()">Lancer Battle</button>
+    </div>
+
+    <!-- Mode Build / Upgrade -->
+    <div style="margin:16px 0;">
+      <button onclick="setMode('build')" style="background:#16a34a;color:white;">Mode: Placer</button>
+      <button onclick="setMode('upgrade')" style="background:#a855f7;color:white;">Mode: Upgrader</button>
+    </div>
+
+    <div id="buildPanel" style="display:block;">
+      <label>Niveau à placer (1–8)</label>
+      <select id="buildLevel">
+        <option value="1">Level 1</option>
+        <option value="2">Level 2</option>
+        <option value="3">Level 3</option>
+        <option value="4">Level 4</option>
+        <option value="5">Level 5</option>
+        <option value="6">Level 6</option>
+        <option value="7">Level 7</option>
+        <option value="8">Level 8</option>
+      </select>
+      <div style="margin:12px 0;">
+        Cases sélectionnées : <strong id="buildCount">0</strong>
+      </div>
+      <button class="place" onclick="placeBuildings()">Placer bâtiments</button>
+      <button class="clear" onclick="clearBuildSelection()">Clear</button>
+    </div>
+
+    <div id="upgradePanel" style="display:none;">
+      <div style="margin:12px 0;">
+        Case sélectionnée : <strong id="upgradeTile">—</strong>
+      </div>
+      <button class="upgrade" onclick="upgradeBuilding()">Upgrader bâtiment</button>
+    </div>
+
+    <!-- Grille -->
+    <div id="grid" class="grid-container"></div>
+  </div>
+
+</div>
+
+<script>
+  const CONTRACT_ADDRESS = "0x864EE1d1B51306e30836B84AdE81e39ebB6e8e0C";
+  const BSC_RPC = "https://bsc-dataseed.bnbchain.org";
+  const providerRead = new ethers.providers.JsonRpcProvider(BSC_RPC);
+
+  const ABI = [
+    "function getKingdom(address) view returns (tuple(uint32 gold, uint32 gems, uint32 perHour, uint32 alliesCount, uint32 alliesEarned, uint32 claimTime, uint32 battleTime, uint16 battleId, uint8 battlesInRow, bool isWinInRow, address ally, uint8[360] tiles))",
+    "function battle(uint8 winChance)",
+    "function sellGems(uint256 gems)",
+    "function placeBuildings(uint16[] tileIds, uint8 level)",
+    "function upgradeBuilding(uint16 tileId)"
+  ];
+
+  let provider, signer, account, contractWrite, kingdom = null;
+  let mode = "build";
+  let selectedBuild = new Set();
+  let selectedUpgrade = null;
+
+  const statusEl  = document.getElementById("status");
+  const errorEl   = document.getElementById("error");
+  const gridEl    = document.getElementById("grid");
+
+  function showStatus(msg) { statusEl.textContent = msg; statusEl.className = "status"; statusEl.style.display = "block"; }
+  function showError(msg)  { errorEl.textContent = msg; errorEl.style.display = "block"; setTimeout(()=>errorEl.style.display="none", 8000); }
+  function clearMsgs()     { statusEl.style.display = "none"; errorEl.style.display = "none"; }
+
+  async function connect() {
+    clearMsgs();
+    if (!window.ethereum) return showError("MetaMask / Rabby non détecté");
+
+    try {
+      provider = new ethers.providers.Web3Provider(window.ethereum);
+      await provider.send("eth_requestAccounts", []);
+      signer = provider.getSigner();
+      account = await signer.getAddress();
+
+      const network = await provider.getNetwork();
+      if (Number(network.chainId) !== 56) {
+        showStatus("Pas sur BSC → essayez Switch BSC");
+        document.getElementById("switchBtn").style.display = "inline-block";
+        return;
       }
-    ],
-    stateMutability: "view",
-    type: "function"
-  },
-  {
-    inputs: [{ internalType: "uint8", name: "_winChance", type: "uint8" }],
-    name: "battle",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function"
-  },
-  {
-    inputs: [{ internalType: "uint256", name: "_gems", type: "uint256" }],
-    name: "sellGems",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function"
-  },
-  {
-    inputs: [
-      { internalType: "uint16[]", name: "_tileIds", type: "uint16[]" },
-      { internalType: "uint8", name: "_level", type: "uint8" }
-    ],
-    name: "placeBuildings",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function"
-  },
-  {
-    inputs: [{ internalType: "uint16", name: "_tileId", type: "uint16" }],
-    name: "upgradeBuilding",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function"
-  }
-];
 
-// Stats bâtiments (copie locale du contrat pour UI)
-function buildingStats(level: number) {
-  const map: Record<number, { cost: number; perHour: number }> = {
-    1: { cost: 10000, perHour: 8 },
-    2: { cost: 28000, perHour: 24 },
-    3: { cost: 54000, perHour: 48 },
-    4: { cost: 100000, perHour: 96 },
-    5: { cost: 250000, perHour: 248 },
-    6: { cost: 500000, perHour: 520 },
-    7: { cost: 1000000, perHour: 1100 },
-    8: { cost: 2000000, perHour: 2300 }
-  };
-  return map[level] || null;
-}
+      document.getElementById("walletInfo").innerHTML = `
+        Connecté : ${account.slice(0,6)}…${account.slice(-4)}<br>
+        <small style="color:#86efac">BSC Mainnet</small>
+      `;
+      document.getElementById("walletInfo").style.display = "block";
+      document.getElementById("connectBtn").textContent = "Reconnect";
 
-function decodeTile(tileValue: number) {
-  if (tileValue === 0) return { empty: true, level: 0, upgrades: 0, raw: 0 };
-  const level = tileValue % 10; // 1..8
-  const upgrades = Math.floor(tileValue / 10); // 0..9
-  return { empty: false, level, upgrades, raw: tileValue };
-}
-
-function shortAddr(a: string) {
-  if (!a) return "";
-  return `${a.slice(0, 6)}…${a.slice(-4)}`;
-}
-
-function tilesToGrid(tiles360: number[]) {
-  const rows = 18;
-  const cols = 20;
-  const grid: number[][] = [];
-  for (let r = 0; r < rows; r++) {
-    const row: number[] = [];
-    for (let c = 0; c < cols; c++) {
-      row.push(tiles360[r * cols + c]);
-    }
-    grid.push(row);
-  }
-  return grid;
-}
-
-function tileBg(level: number) {
-  const palette = ["#111827", "#0ea5e9", "#22c55e", "#a3e635", "#f59e0b", "#f97316", "#ef4444", "#a855f7", "#f5f5f5"];
-  return palette[Math.min(Math.max(level, 0), palette.length - 1)];
-}
-
-export default function App() {
-  const readProvider = useMemo(() => new JsonRpcProvider(BSC_RPC), []);
-  const readContract = useMemo(() => new Contract(CONTRACT_ADDRESS, ABI, readProvider), [readProvider]);
-
-  const [walletProvider, setWalletProvider] = useState<BrowserProvider | null>(null);
-  const [signer, setSigner] = useState<any>(null);
-  const [account, setAccount] = useState("");
-  const [chainOk, setChainOk] = useState(false);
-
-  const [kingdom, setKingdom] = useState<any>(null);
-  const [contractBnb, setContractBnb] = useState("");
-
-  const [sellAmount, setSellAmount] = useState("");
-
-  const [winChance, setWinChance] = useState(50); // 40..60
-  const [nowTs, setNowTs] = useState(Math.floor(Date.now() / 1000));
-
-  // Build/Upgrade UI state
-  const [mode, setMode] = useState<"build" | "upgrade">("build");
-  const [buildLevel, setBuildLevel] = useState(1);
-  const [selectedBuildTiles, setSelectedBuildTiles] = useState(new Set<number>());
-  const [selectedUpgradeTile, setSelectedUpgradeTile] = useState<number | null>(null);
-
-  const [status, setStatus] = useState("");
-  const [err, setErr] = useState("");
-
-  const writeContract = useMemo(() => {
-    if (!signer) return null;
-    return new Contract(CONTRACT_ADDRESS, ABI, signer);
-  }, [signer]);
-
-  async function refreshContractBalance() {
-    try {
-      const bal = await readProvider.getBalance(CONTRACT_ADDRESS);
-      setContractBnb(formatEther(bal));
-    } catch {}
-  }
-
-  async function loadKingdom(addr: string) {
-    setErr("");
-    setStatus("Chargement du Kingdom…");
-    try {
-      const k = await readContract.getKingdom(addr);
-      const tiles = Array.from(k.tiles).map((x: any) => Number(x));
-
-      setKingdom({
-        gold: Number(k.gold),
-        gems: Number(k.gems),
-        perHour: Number(k.perHour),
-        alliesCount: Number(k.alliesCount),
-        alliesEarned: Number(k.alliesEarned),
-        claimTime: Number(k.claimTime),
-        battleTime: Number(k.battleTime),
-        battleId: Number(k.battleId),
-        battlesInRow: Number(k.battlesInRow),
-        isWinInRow: Boolean(k.isWinInRow),
-        ally: k.ally,
-        tiles
-      });
-
-      setSelectedBuildTiles(new Set());
-      setSelectedUpgradeTile(null);
-
-      await refreshContractBalance();
-      setStatus("");
-    } catch (e: any) {
-      setStatus("");
-      setErr(e?.shortMessage || e?.message || String(e));
+      contractWrite = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+      await loadKingdom();
+    } catch (e) {
+      showError(e.message || String(e));
     }
   }
 
-  useEffect(() => {
-    if (!account) return;
-    const id = setInterval(() => loadKingdom(account), 30000);
-    return () => clearInterval(id);
-  }, [account]);
-
-  async function connectWallet() {
-    setErr("");
-    setStatus("");
-    if (!window.ethereum) {
-      setErr("MetaMask (window.ethereum) introuvable.");
-      return;
-    }
-    try {
-      const p = new BrowserProvider(window.ethereum);
-      await p.send("eth_requestAccounts", []);
-      const s = await p.getSigner();
-      const addr = await s.getAddress();
-
-      const net = await p.getNetwork();
-      const ok = Number(net.chainId) === BSC_CHAIN_ID_DEC;
-
-      setWalletProvider(p);
-      setSigner(s);
-      setAccount(addr);
-      setChainOk(ok);
-
-      if (!ok) {
-        setStatus("Wallet connecté, mais pas sur BSC. Clique sur “Switch BSC”.");
-      } else {
-        setStatus("Wallet connecté.");
-        await loadKingdom(addr);
-      }
-    } catch (e: any) {
-      setErr(e?.shortMessage || e?.message || String(e));
-    }
-  }
-
-  async function switchToBSC() {
-    setErr("");
-    if (!window.ethereum) return;
+  async function switchBSC() {
     try {
       await window.ethereum.request({
         method: "wallet_switchEthereumChain",
-        params: [{ chainId: BSC_CHAIN_ID_HEX }]
+        params: [{ chainId: "0x38" }]
       });
-      if (walletProvider) {
-        const net = await walletProvider.getNetwork();
-        const ok = Number(net.chainId) === BSC_CHAIN_ID_DEC;
-        setChainOk(ok);
-        if (ok && account) await loadKingdom(account);
-      }
-    } catch (e: any) {
-      setErr(e?.message || String(e));
+      await connect();
+    } catch (e) {
+      showError(e.message || String(e));
     }
   }
 
-  async function sellGems() {
-    setErr("");
-    setStatus("");
-    if (!writeContract) return setErr("Connecte ton wallet d’abord.");
-    if (!chainOk) return setErr("Pas sur BSC Mainnet (chainId 56).");
-
-    const n = Number(sellAmount);
-    if (!Number.isFinite(n) || n <= 0) return setErr("Entre un nombre > 0.");
+  async function loadKingdom() {
+    clearMsgs();
+    if (!account) return;
 
     try {
-      setStatus("Envoi de sellGems… (signature MetaMask)");
-      const tx = await writeContract.sellGems(BigInt(Math.floor(n)));
-      setStatus(`Tx envoyée: ${tx.hash.slice(0, 10)}...`);
+      const readContract = new ethers.Contract(CONTRACT_ADDRESS, ABI, providerRead);
+      const data = await readContract.getKingdom(account);
+
+      kingdom = {
+        gold: Number(data.gold),
+        gems: Number(data.gems),
+        perHour: Number(data.perHour),
+        alliesCount: Number(data.alliesCount),
+        ally: data.ally,
+        tiles: Array.from(data.tiles).map(Number),
+        battleTime: Number(data.battleTime)
+      };
+
+      document.getElementById("gold").textContent     = kingdom.gold.toLocaleString();
+      document.getElementById("gems").textContent     = kingdom.gems.toLocaleString();
+      document.getElementById("perHour").textContent  = kingdom.perHour.toLocaleString();
+      document.getElementById("allies").textContent   = kingdom.alliesCount;
+      document.getElementById("ally").textContent     = kingdom.ally === ethers.constants.AddressZero ? "—" : shortAddr(kingdom.ally);
+
+      renderGrid();
+      updateBattleStatus();
+    } catch (e) {
+      showError("Impossible de charger le kingdom : " + (e.reason || e.message));
+    }
+  }
+
+  function renderGrid() {
+    gridEl.innerHTML = "";
+    for (let i = 0; i < 360; i++) {
+      const tile = document.createElement("div");
+      tile.className = "tile";
+      const val = kingdom.tiles[i];
+      const level = val % 10;
+      const upg = Math.floor(val / 10);
+
+      if (val > 0) {
+        tile.classList.add("occupied");
+        tile.textContent = level + (upg ? "+"+upg : "");
+      } else {
+        tile.onclick = () => toggleTile(i);
+      }
+
+      if (mode === "build" && selectedBuild.has(i)) tile.classList.add("selected-build");
+      if (mode === "upgrade" && selectedUpgrade === i) tile.classList.add("selected-upgrade");
+
+      gridEl.appendChild(tile);
+    }
+  }
+
+  function toggleTile(id) {
+    if (mode === "build") {
+      if (kingdom.tiles[id] !== 0) return; // déjà occupé
+      if (selectedBuild.has(id)) selectedBuild.delete(id);
+      else selectedBuild.add(id);
+    } else {
+      const val = kingdom.tiles[id];
+      if (val === 0) return;
+      const level = val % 10;
+      const upg = Math.floor(val / 10);
+      if (level < 1 || level > 8 || upg >= 9) return;
+      selectedUpgrade = (selectedUpgrade === id) ? null : id;
+    }
+    renderGrid();
+    document.getElementById("buildCount").textContent = selectedBuild.size;
+    document.getElementById("upgradeTile").textContent = selectedUpgrade ?? "—";
+  }
+
+  function setMode(m) {
+    mode = m;
+    if (m === "build") selectedUpgrade = null;
+    else selectedBuild.clear();
+    renderGrid();
+    document.getElementById("buildPanel").style.display = m === "build" ? "block" : "none";
+    document.getElementById("upgradePanel").style.display = m === "upgrade" ? "block" : "none";
+  }
+
+  function clearBuildSelection() {
+    selectedBuild.clear();
+    renderGrid();
+    document.getElementById("buildCount").textContent = 0;
+  }
+
+  async function sellGems() {
+    const amt = document.getElementById("sellAmount").value.trim();
+    if (!amt || isNaN(amt) || Number(amt) <= 0) return showError("Montant invalide");
+    if (!contractWrite) return showError("Connecte ton wallet d'abord");
+
+    try {
+      showStatus("Transaction en cours...");
+      const tx = await contractWrite.sellGems(ethers.BigNumber.from(amt));
       await tx.wait();
-      setStatus("Confirmé ✅ Rechargement…");
-      await loadKingdom(account);
-      setStatus("Terminé.");
-    } catch (e: any) {
-      setStatus("");
-      setErr(e?.shortMessage || e?.message || String(e));
+      showStatus("Vente confirmée !");
+      await loadKingdom();
+    } catch (e) {
+      showError(e.reason || e.message);
     }
   }
 
   async function doBattle() {
-    setErr("");
-    setStatus("");
-    if (!writeContract) return setErr("Connecte ton wallet d’abord.");
-    if (!chainOk) return setErr("Pas sur BSC Mainnet.");
-    if (!kingdom) return setErr("Kingdom non chargé.");
+    const chance = Number(document.getElementById("winChance").value);
+    if (isNaN(chance) || chance < 40 || chance > 60) return showError("Chance entre 40 et 60");
+    if (!contractWrite) return showError("Connecte ton wallet");
 
-    const wc = Number(winChance);
-    if (!Number.isFinite(wc) || wc < 40 || wc > 60) return setErr("Win chance 40..60.");
-
-    if (kingdom.perHour <= 0) return setErr("perHour = 0 → impossible.");
-    if (battleRemaining > 0) return setErr(`Cooldown: ${formatDuration(battleRemaining)} restant.`);
+    const remaining = battleRemaining();
+    if (remaining > 0) return showError(`Cooldown : ${formatTime(remaining)} restant`);
 
     try {
-      setStatus("Envoi de battle… (signature)");
-      const tx = await writeContract.battle(wc);
-      setStatus(`Tx: ${tx.hash.slice(0, 10)}...`);
+      showStatus("Bataille en cours...");
+      const tx = await contractWrite.battle(chance);
       await tx.wait();
-      setStatus("Confirmé ✅ Rechargement…");
-      await loadKingdom(account);
-      setStatus("Terminé.");
-    } catch (e: any) {
-      setStatus("");
-      setErr(e?.shortMessage || e?.message || String(e));
+      showStatus("Bataille terminée !");
+      await loadKingdom();
+    } catch (e) {
+      showError(e.reason || e.message);
     }
   }
 
-  function onTileClick(tileId: number) {
-    if (!kingdom) return;
+  function battleRemaining() {
+    if (!kingdom) return 0;
+    const cooldown = 24 * 3600;
+    return Math.max(0, kingdom.battleTime + cooldown - Math.floor(Date.now()/1000));
+  }
 
-    const t = decodeTile(kingdom.tiles[tileId]);
+  function updateBattleStatus() {
+    const rem = battleRemaining();
+    document.getElementById("battleStatus").textContent = rem > 0 ? `⏳ ${formatTime(rem)} restant` : "✅ Prêt";
+  }
 
-    if (mode === "build") {
-      if (!t.empty) return;
-      const next = new Set(selectedBuildTiles);
-      if (next.has(tileId)) next.delete(tileId);
-      else next.add(tileId);
-      setSelectedBuildTiles(next);
-      return;
-    }
-
-    // mode upgrade
-    if (t.empty) return;
-    if (t.level <= 0 || t.level >= 9) return;
-    if (t.upgrades >= 9) return;
-    setSelectedUpgradeTile(tileId);
+  function formatTime(s) {
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    return `${h.toString().padStart(2,"0")}:${m.toString().padStart(2,"0")}`;
   }
 
   async function placeBuildings() {
-    setErr("");
-    setStatus("");
-    if (!writeContract) return setErr("Connecte ton wallet.");
-    if (!chainOk) return setErr("Pas sur BSC.");
-    if (!kingdom) return setErr("Kingdom non chargé.");
-    if (selectedBuildTiles.size < 1) return setErr("Sélectionne au moins 1 case.");
+    if (selectedBuild.size === 0) return showError("Sélectionne au moins une case");
+    if (!contractWrite) return showError("Connecte ton wallet");
 
-    const lvl = Number(buildLevel);
-    if (!(lvl >= 1 && lvl <= 8)) return setErr("Niveau 1..8.");
-
-    const st = buildingStats(lvl);
-    const count = selectedBuildTiles.size;
-    const estCost = st ? st.cost * count : null;
-    if (estCost !== null && kingdom.gold < estCost) {
-      return setErr(`Gold insuffisant (estimation: ${estCost.toLocaleString()}).`);
-    }
+    const level = Number(document.getElementById("buildLevel").value);
+    const ids = Array.from(selectedBuild).sort((a,b)=>a-b);
 
     try {
-      setStatus("Envoi placeBuildings…");
-      const tileIds = Array.from(selectedBuildTiles).sort((a, b) => a - b);
-      const tx = await writeContract.placeBuildings(tileIds, lvl);
-      setStatus(`Tx: ${tx.hash.slice(0, 10)}...`);
+      showStatus("Construction en cours...");
+      const tx = await contractWrite.placeBuildings(ids, level);
       await tx.wait();
-      setStatus("Confirmé ✅");
-      await loadKingdom(account);
-      setStatus("Terminé.");
-    } catch (e: any) {
-      setStatus("");
-      setErr(e?.shortMessage || e?.message || String(e));
+      showStatus("Bâtiments placés !");
+      selectedBuild.clear();
+      await loadKingdom();
+    } catch (e) {
+      showError(e.reason || e.message);
     }
   }
 
   async function upgradeBuilding() {
-    setErr("");
-    setStatus("");
-    if (!writeContract) return setErr("Connecte ton wallet.");
-    if (!chainOk) return setErr("Pas sur BSC.");
-    if (!kingdom) return setErr("Kingdom non chargé.");
-    if (selectedUpgradeTile === null) return setErr("Sélectionne une case.");
-
-    const t = decodeTile(kingdom.tiles[selectedUpgradeTile]);
-    if (t.empty) return setErr("Case vide.");
-    if (t.level <= 0 || t.level >= 9) return setErr("Non upgradeable.");
-    if (t.upgrades >= 9) return setErr("Max upgrades.");
-
-    const st = buildingStats(t.level);
-    const estCost = st ? Math.floor(st.cost / 4) : null;
-    if (estCost !== null && kingdom.gold < estCost) {
-      return setErr(`Gold insuffisant (estimation: ${estCost.toLocaleString()}).`);
-    }
+    if (selectedUpgrade === null) return showError("Sélectionne une case à améliorer");
+    if (!contractWrite) return showError("Connecte ton wallet");
 
     try {
-      setStatus("Envoi upgradeBuilding…");
-      const tx = await writeContract.upgradeBuilding(selectedUpgradeTile);
-      setStatus(`Tx: ${tx.hash.slice(0, 10)}...`);
+      showStatus("Amélioration en cours...");
+      const tx = await contractWrite.upgradeBuilding(selectedUpgrade);
       await tx.wait();
-      setStatus("Confirmé ✅");
-      await loadKingdom(account);
-      setStatus("Terminé.");
-    } catch (e: any) {
-      setStatus("");
-      setErr(e?.shortMessage || e?.message || String(e));
+      showStatus("Amélioration terminée !");
+      selectedUpgrade = null;
+      await loadKingdom();
+    } catch (e) {
+      showError(e.reason || e.message);
     }
   }
 
-  useEffect(() => {
-    const id = setInterval(() => setNowTs(Math.floor(Date.now() / 1000)), 1000);
-    return () => clearInterval(id);
-  }, []);
-
-  useEffect(() => {
-    if (!window.ethereum) return;
-    const onAccounts = (accs: string[]) => {
-      const a = accs?.[0] || "";
-      setAccount(a);
-      if (a && chainOk) loadKingdom(a);
-    };
-    const onChain = () => connectWallet();
-    window.ethereum.on("accountsChanged", onAccounts);
-    window.ethereum.on("chainChanged", onChain);
-    return () => {
-      window.ethereum.removeListener("accountsChanged", onAccounts);
-      window.ethereum.removeListener("chainChanged", onChain);
-    };
-  }, [chainOk]);
-
-  const grid = kingdom?.tiles ? tilesToGrid(kingdom.tiles) : null;
-
-  const battleCooldownSec = 86400;
-  const lastBattle = kingdom?.battleTime ? Number(kingdom.battleTime) : 0;
-  const nextBattleAt = lastBattle + battleCooldownSec;
-  const battleRemaining = Math.max(0, nextBattleAt - nowTs);
-  const battleReady = battleRemaining === 0;
-
-  function formatDuration(s: number) {
-    const hh = Math.floor(s / 3600);
-    const mm = Math.floor((s % 3600) / 60);
-    const ss = s % 60;
-    return `${hh.toString().padStart(2, "0")}:${mm.toString().padStart(2, "0")}:${ss.toString().padStart(2, "0")}`;
+  function shortAddr(addr) {
+    if (!addr || addr === "0x0000000000000000000000000000000000000000") return "—";
+    return addr.slice(0,6) + "…" + addr.slice(-4);
   }
 
-  const lvlStats = buildingStats(Number(buildLevel));
-  const buildCount = selectedBuildTiles.size;
-  const estBuildCost = lvlStats ? lvlStats.cost * buildCount : null;
-  const estBuildPerHour = lvlStats ? lvlStats.perHour * buildCount : null;
+  // Init
+  document.getElementById("connectBtn").onclick = connect;
+  document.getElementById("switchBtn").onclick = switchBSC;
 
-  const upgradeTileInfo = kingdom && selectedUpgradeTile !== null ? decodeTile(kingdom.tiles[selectedUpgradeTile]) : null;
-  const upgradeStats = upgradeTileInfo && !upgradeTileInfo.empty ? buildingStats(upgradeTileInfo.level) : null;
-  const estUpgradeCost = upgradeStats ? Math.floor(upgradeStats.cost / 4) : null;
-  const estUpgradePerHour = upgradeStats ? Math.floor(upgradeStats.perHour / 4) : null;
+  setInterval(() => {
+    if (kingdom) updateBattleStatus();
+  }, 1000);
 
-  return (
-    <div style={{ maxWidth: 1180, margin: "36px auto", padding: 16, fontFamily: "system-ui" }}>
-      <header style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
-        <div>
-          <h1 style={{ margin: 0 }}>BNBKing — dApp (kingdom + sell + build + upgrade)</h1>
-          <div style={{ opacity: 0.7, marginTop: 6 }}>
-            Contract: <code>{CONTRACT_ADDRESS}</code>
-          </div>
-        </div>
+  // Auto-refresh kingdom toutes les 30s si connecté
+  setInterval(() => { if (account && kingdom) loadKingdom(); }, 30000);
+</script>
 
-        <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-          {account ? (
-            <div style={{ padding: "8px 10px", border: "1px solid #e5e7eb", borderRadius: 12 }}>
-              <div style={{ fontSize: 12, opacity: 0.7 }}>Connecté</div>
-              <div style={{ fontWeight: 650 }}>{shortAddr(account)}</div>
-              <div style={{ fontSize: 12, marginTop: 2, color: chainOk ? "#16a34a" : "#ef4444" }}>
-                {chainOk ? "BSC Mainnet" : "Mauvaise chaîne"}
-              </div>
-            </div>
-          ) : (
-            <div style={{ opacity: 0.7, fontSize: 13 }}>Wallet non connecté</div>
-          )}
-
-          <button onClick={connectWallet} style={btn}>
-            {account ? "Re-connect" : "Connect wallet"}
-          </button>
-          <button onClick={switchToBSC} style={{ ...btn, background: "#111827" }}>
-            Switch BSC
-          </button>
-        </div>
-      </header>
-
-      <div style={{ display: "grid", gridTemplateColumns: "440px 1fr", gap: 16, marginTop: 18 }}>
-        {/* LEFT - Actions */}
-        <section style={card}>
-          <h2 style={h2}>Actions</h2>
-
-          <div style={label}>Contract balance (BNB)</div>
-          <div style={{ fontSize: 18, fontWeight: 700 }}>{contractBnb || "—"}</div>
-
-          <hr style={hr} />
-
-          <div style={label}>Lire mon Kingdom</div>
-          <button style={btn} disabled={!account} onClick={() => account && loadKingdom(account)}>
-            Refresh Kingdom
-          </button>
-
-          <hr style={hr} />
-
-          <div style={label}>Vendre des gemmes → BNB</div>
-          <input
-            style={input}
-            placeholder="ex: 1000"
-            value={sellAmount}
-            onChange={(e) => setSellAmount(e.target.value)}
-          />
-          <button style={{ ...btn, background: "#0ea5e9" }} onClick={sellGems} disabled={!account || !chainOk}>
-            Sell Gems
-          </button>
-
-          <hr style={hr} />
-
-          <div style={label}>Battle (cooldown 24h)</div>
-
-          <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 8 }}>
-            <div style={{ fontSize: 13, opacity: 0.8 }}>
-              {kingdom
-                ? battleReady
-                  ? "✅ Ready"
-                  : `⏳ Cooldown: ${formatDuration(battleRemaining)}`
-                : "—"}
-            </div>
-          </div>
-
-          <div style={label}>Win chance (40..60)</div>
-          <input
-            style={input}
-            value={winChance}
-            onChange={(e) => setWinChance(e.target.value)}
-            placeholder="50"
-          />
-
-          <button
-            style={{ ...btn, background: "#ef4444" }}
-            onClick={doBattle}
-            disabled={!account || !chainOk || !kingdom || battleRemaining > 0 || kingdom.perHour <= 0}
-          >
-            Battle
-          </button>
-
-          <div style={{ fontSize: 12, opacity: 0.7, marginTop: 10 }}>
-            Règles: winChance 40..60, cooldown 24h, perHour > 0.
-          </div>
-
-          <hr style={hr} />
-
-          <div style={label}>Mode</div>
-          <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
-            <button
-              style={{
-                ...pill,
-                background: mode === "build" ? "#16a34a" : "#f3f4f6",
-                color: mode === "build" ? "white" : "#111827"
-              }}
-              onClick={() => {
-                setMode("build");
-                setSelectedUpgradeTile(null);
-              }}
-            >
-              Place buildings
-            </button>
-            <button
-              style={{
-                ...pill,
-                background: mode === "upgrade" ? "#16a34a" : "#f3f4f6",
-                color: mode === "upgrade" ? "white" : "#111827"
-              }}
-              onClick={() => {
-                setMode("upgrade");
-                setSelectedBuildTiles(new Set());
-              }}
-            >
-              Upgrade building
-            </button>
-          </div>
-
-          {mode === "build" ? (
-            <>
-              <div style={label}>Niveau à placer (1..8)</div>
-              <select
-                style={{ ...input, marginBottom: 10 }}
-                value={buildLevel}
-                onChange={(e) => setBuildLevel(Number(e.target.value))}
-              >
-                {[1, 2, 3, 4, 5, 6, 7, 8].map((l) => (
-                  <option key={l} value={l}>
-                    Level {l}
-                  </option>
-                ))}
-              </select>
-
-              <div style={{ fontSize: 13, opacity: 0.8, marginBottom: 8 }}>
-                Sélection: <b>{buildCount}</b> case(s) vide(s)
-              </div>
-              <div style={{ fontSize: 13, opacity: 0.8, marginBottom: 12 }}>
-                Estimations: <b>cost</b> {estBuildCost?.toLocaleString() ?? "—"} gold,{" "}
-                <b>+perHour</b> {estBuildPerHour?.toLocaleString() ?? "—"}
-              </div>
-
-              <button
-                style={{ ...btn, background: "#f59e0b" }}
-                onClick={placeBuildings}
-                disabled={!account || !chainOk || buildCount < 1}
-              >
-                Place Buildings
-              </button>
-
-              <div style={{ fontSize: 12, opacity: 0.7, marginTop: 10 }}>
-                Règles: cases vides, level 1..8, gold suffisant.
-              </div>
-            </>
-          ) : (
-            <>
-              <div style={{ fontSize: 13, opacity: 0.8, marginBottom: 8 }}>
-                Case sélectionnée: <b>{selectedUpgradeTile ?? "—"}</b>
-              </div>
-
-              {upgradeTileInfo && selectedUpgradeTile !== null && (
-                <div style={{ fontSize: 13, opacity: 0.85, marginBottom: 12 }}>
-                  Level <b>{upgradeTileInfo.level}</b> — upgrades <b>{upgradeTileInfo.upgrades}</b> (raw: {upgradeTileInfo.raw})
-                  <div style={{ marginTop: 6 }}>
-                    Estimations: <b>cost</b> {estUpgradeCost?.toLocaleString() ?? "—"} gold,{" "}
-                    <b>+perHour</b> {estUpgradePerHour?.toLocaleString() ?? "—"}
-                  </div>
-                </div>
-              )}
-
-              <button
-                style={{ ...btn, background: "#a855f7" }}
-                onClick={upgradeBuilding}
-                disabled={!account || !chainOk || selectedUpgradeTile === null}
-              >
-                Upgrade Building
-              </button>
-
-              <div style={{ fontSize: 12, opacity: 0.7, marginTop: 10 }}>
-                Règles: case non vide, upgrades < 9, gold suffisant.
-              </div>
-            </>
-          )}
-
-          {(status || err) && (
-            <div style={{ marginTop: 14 }}>
-              {status && <div style={{ padding: 10, borderRadius: 12, background: "#f3f4f6" }}>{status}</div>}
-              {err && (
-                <pre
-                  style={{
-                    marginTop: 10,
-                    padding: 10,
-                    borderRadius: 12,
-                    background: "#fff1f2",
-                    color: "#9f1239",
-                    whiteSpace: "pre-wrap",
-                    fontSize: 13
-                  }}
-                >
-                  {err}
-                </pre>
-              )}
-            </div>
-          )}
-        </section>
-
-        {/* RIGHT - Kingdom + Grid */}
-        <section style={card}>
-          <h2 style={h2}>Kingdom</h2>
-
-          {!account && <div style={{ opacity: 0.7 }}>Connecte ton wallet pour charger ton Kingdom.</div>}
-
-          {kingdom && (
-            <>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 10 }}>
-                <Stat k="Gold" v={kingdom.gold.toLocaleString()} />
-                <Stat k="Gems" v={kingdom.gems.toLocaleString()} />
-                <Stat k="Per hour" v={kingdom.perHour.toLocaleString()} />
-                <Stat k="Allies" v={kingdom.alliesCount} />
-                <Stat k="Allies earned" v={kingdom.alliesEarned} />
-                <Stat k="Ally" v={shortAddr(kingdom.ally)} />
-              </div>
-
-              <hr style={hr} />
-
-              <div style={{ display: "flex", justifyContent: "space-between", gap: 10, alignItems: "end", marginBottom: 10 }}>
-                <div>
-                  <div style={{ fontSize: 13, opacity: 0.7 }}>
-                    Tiles (360) — clique pour {mode === "build" ? "sélectionner cases vides" : "choisir case à upgrader"}
-                  </div>
-                  <div style={{ fontSize: 12, opacity: 0.6, marginTop: 4 }}>
-                    0 = vide | sinon raw = upgrades×10 + level (level = raw % 10)
-                  </div>
-                </div>
-                {mode === "build" && (
-                  <button
-                    style={{ ...pill, background: "#111827", color: "white" }}
-                    onClick={() => setSelectedBuildTiles(new Set())}
-                  >
-                    Clear
-                  </button>
-                )}
-              </div>
-
-              {grid && (
-                <div style={{ display: "grid", gap: 6 }}>
-                  {grid.map((row, r) => (
-                    <div key={r} style={{ display: "flex", gap: 4 }}>
-                      {row.map((raw, c) => {
-                        const tileId = r * 20 + c;
-                        const info = decodeTile(raw);
-
-                        const isBuildSelected = selectedBuildTiles.has(tileId);
-                        const isUpgradeSelected = selectedUpgradeTile === tileId;
-
-                        const bg = info.empty ? "#0b1220" : tileBg(info.level);
-                        const outline =
-                          mode === "build"
-                            ? isBuildSelected
-                              ? "2px solid #f59e0b"
-                              : "1px solid rgba(255,255,255,0.10)"
-                            : isUpgradeSelected
-                            ? "2px solid #a855f7"
-                            : "1px solid rgba(255,255,255,0.10)";
-
-                        const canClick =
-                          mode === "build"
-                            ? info.empty
-                            : !info.empty && info.upgrades < 9 && info.level >= 1 && info.level <= 8;
-
-                        return (
-                          <div
-                            key={c}
-                            onClick={() => canClick && onTileClick(tileId)}
-                            title={`tile ${tileId} — raw ${info.raw} — level ${info.level} — upgrades ${info.upgrades}`}
-                            style={{
-                              background: bg,
-                              border: outline,
-                              borderRadius: 7,
-                              width: 18,
-                              height: 18,
-                              display: "grid",
-                              placeItems: "center",
-                              fontSize: 10,
-                              color: info.level >= 8 ? "#111827" : "rgba(255,255,255,0.85)",
-                              userSelect: "none",
-                              cursor: canClick ? "pointer" : "default",
-                              opacity: canClick ? 1 : 0.55
-                            }}
-                          >
-                            {info.empty ? "" : `${info.level}${info.upgrades ? `+${info.upgrades}` : ""}`}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </>
-          )}
-        </section>
-      </div>
-
-      <footer style={{ opacity: 0.7, fontSize: 12, marginTop: 16 }}>
-        PlaceBuildings / UpgradeBuilding issus du code vérifié du contrat BNBKing.
-      </footer>
-    </div>
-  );
-}
-
-function Stat({ k, v }: { k: string; v: string | number }) {
-  return (
-    <div style={{ padding: 10, border: "1px solid #e5e7eb", borderRadius: 14 }}>
-      <div style={{ fontSize: 12, opacity: 0.7 }}>{k}</div>
-      <div style={{ fontSize: 18, fontWeight: 750, marginTop: 4 }}>{v ?? "—"}</div>
-    </div>
-  );
-}
-
-const card = {
-  border: "1px solid #e5e7eb",
-  borderRadius: 18,
-  padding: 16,
-  boxShadow: "0 1px 10px rgba(0,0,0,0.05)",
-  background: "white"
-};
-
-const h2 = { margin: "0 0 12px 0", fontSize: 16 };
-
-const btn = {
-  padding: "10px 12px",
-  borderRadius: 14,
-  border: "1px solid #e5e7eb",
-  background: "#16a34a",
-  color: "white",
-  fontWeight: 700,
-  cursor: "pointer"
-};
-
-const pill = {
-  padding: "8px 10px",
-  borderRadius: 999,
-  border: "1px solid #e5e7eb",
-  cursor: "pointer",
-  fontWeight: 700
-};
-
-const input = {
-  width: "100%",
-  padding: "10px 12px",
-  borderRadius: 14,
-  border: "1px solid #e5e7eb",
-  marginTop: 6,
-  marginBottom: 8
-};
-
-const label = { fontSize: 12, opacity: 0.7, marginBottom: 6 };
-const hr = { border: 0, borderTop: "1px solid #e5e7eb", margin: "14px 0" };
+</body>
+</html>
