@@ -1,305 +1,917 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>BNBKing</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BNBKing - Interface de Jeu</title>
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Karla:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0f1324;
-            --card: rgba(20, 25, 45, 0.92);
-            --accent: #f0c040;
-            --accent-dark: #c89f30;
-            --gem: #4fffd2;
-            --text: #e8f0ff;
-            --text-dim: #a0b0d0;
-            --border: #2a3a5a;
-            --success: #4ade80;
-            --danger: #f87171;
+            --gold: #FFD700;
+            --dark-gold: #B8860B;
+            --gem: #40E0D0;
+            --dark-gem: #20B2AA;
+            --bg-dark: #0a0e27;
+            --bg-card: #1a1f3a;
+            --border: #2a3f5f;
+            --text-light: #e0e6ed;
+            --text-dim: #8892a6;
+            --danger: #ff4757;
+            --success: #2ed573;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin:0; padding:0; box-sizing:border-box; }
 
         body {
-            font-family: 'Inter', system-ui, sans-serif;
-            background: url('https://images.unsplash.com/photo-1519681393784-d120267933ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
-            background-size: cover;
-            color: var(--text);
-            min-height: 100vh;
-            line-height: 1.5;
+            font-family:'Karla',sans-serif;
+            background:linear-gradient(135deg,var(--bg-dark),#1a0f2e);
+            color:var(--text-light);
+            min-height:100vh;
+            position:relative;
+            overflow-x:hidden;
         }
 
         body::before {
-            content: "";
-            position: fixed;
-            inset: 0;
-            background: linear-gradient(to bottom, rgba(15,19,36,0.82), rgba(15,19,36,0.95));
-            z-index: 0;
+            content:'';
+            position:fixed;
+            inset:0;
+            background:radial-gradient(circle at 20% 30%,rgba(255,215,0,0.03) 0%,transparent 40%),
+                       radial-gradient(circle at 80% 70%,rgba(64,224,208,0.03) 0%,transparent 40%);
+            pointer-events:none;
+            z-index:0;
         }
 
         .container {
-            position: relative;
-            z-index: 1;
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 24px 16px;
+            max-width:1400px;
+            margin:0 auto;
+            padding:20px;
+            position:relative;
+            z-index:1;
         }
 
         header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 24px 0;
-            margin-bottom: 32px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            padding:30px 0;
+            border-bottom:2px solid var(--border);
+            margin-bottom:40px;
+            flex-wrap:wrap;
+            gap:20px;
         }
 
         h1 {
-            font-family: 'Cinzel', serif;
-            font-size: 2.8rem;
-            background: linear-gradient(90deg, var(--accent), #ffeb99);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: 1px;
+            font-family:'Cinzel',serif;
+            font-size:2.5em;
+            font-weight:900;
+            background:linear-gradient(135deg,var(--gold),var(--dark-gold));
+            -webkit-background-clip:text;
+            -webkit-text-fill-color:transparent;
+            background-clip:text;
+            letter-spacing:2px;
+            text-shadow:0 0 30px rgba(255,215,0,0.3);
         }
 
-        .wallet-btn {
-            padding: 12px 24px;
-            background: linear-gradient(90deg, var(--accent), var(--accent-dark));
-            color: #0f1324;
-            border: none;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
+        .wallet-section {
+            display:flex;
+            gap:15px;
+            align-items:center;
+            flex-wrap:wrap;
         }
 
-        .wallet-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(240,192,64,0.3);
+        button {
+            padding:12px 28px;
+            border:2px solid var(--gold);
+            background:linear-gradient(135deg,var(--gold),var(--dark-gold));
+            color:var(--bg-dark);
+            font-weight:600;
+            font-size:1em;
+            cursor:pointer;
+            border-radius:8px;
+            transition:all 0.3s ease;
+            text-transform:uppercase;
+            letter-spacing:0.8px;
+            position:relative;
+            overflow:hidden;
+        }
+
+        button:hover {
+            transform:translateY(-2px);
+            box-shadow:0 10px 30px rgba(255,215,0,0.4);
+        }
+
+        button:disabled {
+            opacity:0.5;
+            cursor:not-allowed;
+        }
+
+        button.secondary {
+            background:linear-gradient(135deg,var(--gem),var(--dark-gem));
+            border-color:var(--gem);
+            color:var(--bg-dark);
+        }
+
+        button.danger {
+            background:linear-gradient(135deg,var(--danger),#c23616);
+            border-color:var(--danger);
+            color:white;
         }
 
         .wallet-address {
-            padding: 10px 16px;
-            background: var(--card);
-            border-radius: 12px;
-            font-family: monospace;
-            font-size: 0.95rem;
-            border: 1px solid var(--border);
+            padding:10px 20px;
+            background:var(--bg-card);
+            border:1px solid var(--border);
+            border-radius:8px;
+            font-family:monospace;
+            font-size:0.9em;
+            color:var(--text-dim);
         }
 
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
+        .stats-grid {
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+            gap:20px;
+            margin-bottom:40px;
         }
 
         .stat-card {
-            background: var(--card);
-            border-radius: 16px;
-            padding: 24px;
-            border: 1px solid var(--border);
-            backdrop-filter: blur(8px);
+            background:var(--bg-card);
+            border:1px solid var(--border);
+            border-radius:12px;
+            padding:25px;
+            position:relative;
+            overflow:hidden;
+            transition:all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform:translateY(-5px);
+            box-shadow:0 10px 30px rgba(255,215,0,0.2);
+        }
+
+        .stat-card::before {
+            content:'';
+            position:absolute;
+            top:0; left:0; right:0;
+            height:3px;
+            background:linear-gradient(90deg,var(--gold),var(--gem));
         }
 
         .stat-label {
-            font-size: 0.9rem;
-            color: var(--text-dim);
-            margin-bottom: 8px;
+            font-size:0.9em;
+            color:var(--text-dim);
+            text-transform:uppercase;
+            margin-bottom:10px;
         }
 
         .stat-value {
-            font-size: 2.1rem;
-            font-weight: 600;
-            font-family: 'Cinzel', serif;
+            font-size:2em;
+            font-weight:700;
+            font-family:'Cinzel',serif;
         }
 
-        .gem-value {
-            color: var(--gem);
-        }
+        .stat-value.gold { color:var(--gold); text-shadow:0 0 20px rgba(255,215,0,0.5); }
+        .stat-value.gem  { color:var(--gem);  text-shadow:0 0 20px rgba(64,224,208,0.5); }
 
-        .gold-value {
-            color: var(--accent);
-        }
-
-        .conversion {
-            margin-top: 12px;
-            font-size: 1rem;
-            color: var(--gem);
-            text-align: center;
-            background: rgba(79,255,210,0.08);
-            border: 1px solid rgba(79,255,210,0.3);
-            border-radius: 10px;
-            padding: 10px;
+        .gems-conversion {
+            margin-top:12px;
+            font-size:1.1em;
+            color:var(--gem);
+            text-align:center;
+            background:rgba(64,224,208,0.1);
+            border:1px solid var(--gem);
+            border-radius:8px;
+            padding:10px;
         }
 
         .section {
-            background: var(--card);
-            border-radius: 16px;
-            padding: 28px;
-            margin-bottom: 32px;
-            border: 1px solid var(--border);
+            background:var(--bg-card);
+            border:1px solid var(--border);
+            border-radius:12px;
+            padding:30px;
+            margin-bottom:30px;
         }
 
         .section-title {
-            font-family: 'Cinzel', serif;
-            font-size: 1.8rem;
-            color: var(--accent);
-            margin-bottom: 20px;
+            font-family:'Cinzel',serif;
+            font-size:1.8em;
+            margin-bottom:25px;
+            color:var(--gold);
+            border-bottom:2px solid var(--border);
+            padding-bottom:15px;
+        }
+
+        .input-group {
+            margin-bottom:20px;
+        }
+
+        label {
+            display:block;
+            margin-bottom:8px;
+            color:var(--text-dim);
+            font-weight:600;
+            text-transform:uppercase;
+            font-size:0.85em;
+        }
+
+        input, select {
+            width:100%;
+            padding:14px;
+            background:var(--bg-dark);
+            border:2px solid var(--border);
+            border-radius:8px;
+            color:var(--text-light);
+            font-size:1em;
+            transition:all 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline:none;
+            border-color:var(--gold);
+            box-shadow:0 0 20px rgba(255,215,0,0.2);
         }
 
         .grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 24px;
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+            gap:20px;
         }
 
         .building-grid {
-            display: grid;
-            grid-template-columns: repeat(20, 1fr);
-            gap: 3px;
-            background: rgba(0,0,0,0.4);
-            padding: 12px;
-            border-radius: 12px;
-            margin-top: 20px;
-            max-width: 100%;
-            overflow-x: auto;
+            display:grid;
+            grid-template-columns:repeat(20,1fr);
+            gap:2px;
+            background:var(--bg-dark);
+            padding:10px;
+            border-radius:8px;
+            margin-top:20px;
+            max-width:100%;
+            overflow-x:auto;
         }
 
         .tile {
-            aspect-ratio: 1;
-            background: #2a3a5a;
-            border-radius: 6px;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.75rem;
-            color: var(--text-dim);
-            transition: all 0.15s;
+            aspect-ratio:1;
+            background:var(--border);
+            border:1px solid var(--bg-dark);
+            position:relative;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:0.7em;
+            color:#8892a6;
+            cursor:pointer;
+            transition:all 0.2s ease;
         }
 
         .tile:hover {
-            background: var(--accent);
-            transform: scale(1.08);
-            color: #0f1324;
+            background:#3a4f6f;
+            transform:scale(1.08);
         }
 
         .tile.occupied {
-            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
-            color: #0f1324;
-            font-weight: 600;
+            background:linear-gradient(135deg,var(--gold),var(--dark-gold));
+            color:var(--bg-dark);
+            font-weight:bold;
+            cursor:default;
+        }
+
+        .tile.selected {
+            background:var(--gem);
+            box-shadow:0 0 12px var(--gem);
         }
 
         .tile-number {
-            position: absolute;
-            top: 6px;
-            left: 6px;
-            font-size: 0.7rem;
-            color: var(--accent);
-            font-weight: bold;
-            text-shadow: 0 0 4px #000;
-            pointer-events: none;
+            position:absolute;
+            top:4px;
+            left:4px;
+            font-size:0.65em;
+            font-weight:bold;
+            color:var(--gold);
+            text-shadow:0 0 3px rgba(0,0,0,0.8);
+            pointer-events:none;
+            z-index:5;
         }
 
-        .hidden { display: none; }
+        .level {
+            position:absolute;
+            top:50%;
+            left:50%;
+            transform:translate(-50%,-50%);
+            font-size:0.9em;
+            font-weight:bold;
+            color:var(--bg-dark);
+        }
+
+        .action-buttons {
+            display:flex;
+            gap:15px;
+            margin-top:20px;
+            flex-wrap:wrap;
+        }
+
+        .message {
+            padding:15px 20px;
+            border-radius:8px;
+            margin:20px 0;
+            font-weight:600;
+        }
+
+        .success { background:rgba(46,213,115,0.2); border:1px solid var(--success); color:var(--success); }
+        .error   { background:rgba(255,71,87,0.2); border:1px solid var(--danger);   color:var(--danger);   }
+        .info    { background:rgba(64,224,208,0.2); border:1px solid var(--gem);     color:var(--gem);      }
+
+        .info-box {
+            background:rgba(64,224,208,0.1);
+            border:1px solid var(--gem);
+            border-radius:8px;
+            padding:15px;
+            margin-bottom:20px;
+            font-size:0.95em;
+        }
+
+        .cooldown-timer {
+            font-size:1.2em;
+            color:var(--danger);
+            font-weight:bold;
+            margin:12px 0;
+        }
+
+        .ally-input-group {
+            display:flex;
+            gap:12px;
+            align-items:flex-end;
+            flex-wrap:wrap;
+        }
+
+        .ally-input-group > div { flex:1; min-width:220px; }
+
+        .hidden { display:none; }
+
+        footer {
+            text-align:center;
+            padding:40px 0 20px;
+            color:var(--text-dim);
+            font-size:0.9em;
+            border-top:1px solid var(--border);
+        }
 
         @media (max-width: 768px) {
-            h1 { font-size: 2.2rem; }
-            .stats { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+            .building-grid { grid-template-columns: repeat(15, 1fr); }
+            h1 { font-size: 2.1em; }
         }
     </style>
 </head>
 <body>
+
     <div class="container">
         <header>
-            <h1>BNBKing</h1>
+            <h1>⚔️ BNBKing</h1>
             <div class="wallet-section">
-                <button class="wallet-btn" id="connectWalletBtn">Connect Wallet</button>
-                <div class="wallet-address hidden" id="walletAddress"></div>
-                <button class="wallet-btn" id="disconnectBtn" style="display:none;background:#f87171;color:white;">Disconnect</button>
+                <button id="connectWalletBtn">Connecter Wallet</button>
+                <div id="walletAddress" class="wallet-address hidden"></div>
+                <button id="disconnectBtn" class="danger hidden">Déconnecter</button>
             </div>
         </header>
 
+        <div id="messageContainer"></div>
+
         <div id="notConnected" class="section">
-            <h2 class="section-title">Bienvenue</h2>
-            <p>Connectez votre wallet pour jouer, gagner des gems et développer votre royaume.</p>
+            <h2 class="section-title">Bienvenue sur BNBKing</h2>
+            <p style="line-height:1.8; color:var(--text-dim);">
+                Connectez votre wallet Metamask ou Rabby pour accéder à votre royaume, 
+                retirer vos gems, construire et améliorer vos bâtiments, et participer aux batailles.
+            </p>
+            <div style="margin-top:20px;">
+                <p style="margin-bottom:10px; font-weight:600;">⚠️ Important :</p>
+                <ul style="list-style:none; line-height:2;">
+                    <li>✓ Assurez-vous d'être sur le réseau BSC (Binance Smart Chain)</li>
+                    <li>✓ L'adresse du contrat sera configurée après connexion</li>
+                    <li>✓ Toutes les transactions nécessitent du BNB pour les frais de gas</li>
+                </ul>
+            </div>
         </div>
 
         <div id="gameInterface" class="hidden">
-            <div class="stats">
+
+            <!-- Stats + Conversion -->
+            <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-label">Gold</div>
-                    <div class="stat-value gold-value" id="goldAmount">0</div>
+                    <div class="stat-label">💰 Or (Gold)</div>
+                    <div class="stat-value gold" id="goldAmount">0</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label">Gems</div>
-                    <div class="stat-value gem-value" id="gemsAmount">0</div>
-                    <div class="conversion" id="gemsValue">≈ 0.000000 BNB (~0.00 USDT)</div>
+                    <div class="stat-label">💎 Gemmes (Gems)</div>
+                    <div class="stat-value gem" id="gemsAmount">0</div>
+                    <div class="gems-conversion" id="gemsValue">≈ 0.000000 BNB (~0.00 USDT)</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label">Production / heure</div>
+                    <div class="stat-label">⚡ Production / Heure</div>
                     <div class="stat-value" id="perHourAmount">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">👥 Alliés</div>
+                    <div class="stat-value" id="alliesCount">0</div>
                 </div>
             </div>
 
+            <!-- Buy Gold -->
             <div class="section">
-                <h2 class="section-title">Construire des bâtiments</h2>
+                <h2 class="section-title">💰 Acheter de l'Or</h2>
+                <div class="input-group">
+                    <label>Montant BNB à déposer</label>
+                    <input type="number" id="bnbAmount" placeholder="0.1" step="0.01" min="0">
+                    <small style="color:var(--text-dim);margin-top:5px;display:block;">
+                        Taux de conversion: 1 BNB = 1,000,000 Gold
+                    </small>
+                </div>
+                <div class="ally-input-group">
+                    <div>
+                        <label>Adresse Allié (optionnel)</label>
+                        <input type="text" id="allyAddress" placeholder="0x...">
+                    </div>
+                    <button onclick="buyGold()">Acheter de l'Or</button>
+                </div>
+            </div>
+
+            <!-- Sell & Swap -->
+            <div class="grid-container">
+                <div class="section">
+                    <h2 class="section-title">💎 Vendre des Gemmes</h2>
+                    <div class="info-box">
+                        💡 Convertissez vos gemmes en BNB au taux: 1,000,000 Gems = 1 BNB
+                    </div>
+                    <div class="input-group">
+                        <label>Nombre de gemmes à vendre</label>
+                        <input type="number" id="sellGemsAmount" placeholder="100000" step="1000" min="0">
+                    </div>
+                    <button onclick="sellGems()" style="width:100%;">Vendre des Gemmes</button>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">🔄 Échanger Gems contre Or</h2>
+                    <div class="info-box">
+                        💡 Taux d'échange: 1 Gem = 2 Gold
+                    </div>
+                    <div class="input-group">
+                        <label>Nombre de gemmes à échanger</label>
+                        <input type="number" id="swapGemsAmount" placeholder="10000" step="1000" min="0">
+                    </div>
+                    <button onclick="swapGemsToGold()" class="secondary" style="width:100%;">Échanger</button>
+                </div>
+            </div>
+
+            <!-- Buildings -->
+            <div class="section">
+                <h2 class="section-title">🏰 Construire des Bâtiments</h2>
+                <div class="info-box">
+                    💡 Cliquez sur les cases vides (grises) pour les sélectionner, puis choisissez un niveau et construisez.<br>Les cases jaunes sont déjà occupées.
+                </div>
+                <div class="grid-container">
+                    <div class="input-group">
+                        <label>Niveau du bâtiment</label>
+                        <select id="buildingLevel">
+                            <option value="1">Niveau 1 - 10,000 Gold (8/h)</option>
+                            <option value="2">Niveau 2 - 28,000 Gold (24/h)</option>
+                            <option value="3">Niveau 3 - 54,000 Gold (48/h)</option>
+                            <option value="4">Niveau 4 - 100,000 Gold (96/h)</option>
+                            <option value="5">Niveau 5 - 250,000 Gold (248/h)</option>
+                            <option value="6">Niveau 6 - 500,000 Gold (520/h)</option>
+                            <option value="7">Niveau 7 - 1,000,000 Gold (1,100/h)</option>
+                            <option value="8">Niveau 8 - 2,000,000 Gold (2,300/h)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Cases sélectionnées: <span id="selectedCount">0</span></label>
+                        <div class="action-buttons">
+                            <button onclick="placeBuildings()">Construire</button>
+                            <button onclick="clearSelection()" class="secondary">Effacer</button>
+                        </div>
+                    </div>
+                </div>
                 <div class="building-grid" id="buildingGrid"></div>
             </div>
+
+            <!-- Upgrade -->
+            <div class="section">
+                <h2 class="section-title">⬆️ Améliorer un Bâtiment</h2>
+                <div class="info-box">
+                    💡 Coût = 25% du coût de base • +25% de production par amélioration
+                </div>
+                <div class="input-group">
+                    <label>ID de la case (0–359)</label>
+                    <input type="number" id="upgradeTileId" placeholder="0" min="0" max="359">
+                </div>
+                <button onclick="upgradeBuilding()">Améliorer</button>
+            </div>
+
+            <!-- Battle -->
+            <div class="section">
+                <h2 class="section-title">⚔️ Bataille</h2>
+                <div class="info-box">
+                    ⚠️ Cooldown : 24 heures<br>
+                    💪 Première bataille → victoire automatique<br>
+                    🎲 Récompense victoire : (perHour × 16 × 50) / winChance<br>
+                    😢 Récompense défaite : perHour × 8
+                </div>
+                <div id="battleCooldown" class="cooldown-timer hidden"></div>
+                <div style="display:flex; gap:20px; flex-wrap:wrap; align-items:flex-end;">
+                    <div class="input-group" style="flex:1; min-width:220px;">
+                        <label>Chance de victoire (40–60%)</label>
+                        <input type="number" id="winChance" placeholder="50" min="40" max="60" value="50">
+                        <small style="color:var(--text-dim);margin-top:5px;display:block;">
+                            Plus faible = meilleure récompense en cas de victoire
+                        </small>
+                    </div>
+                    <button onclick="startBattle()">Lancer la Bataille</button>
+                </div>
+            </div>
+
+            <!-- Contract -->
+            <div class="section">
+                <h2 class="section-title">⚙️ Configuration Contrat</h2>
+                <div class="input-group">
+                    <label>Adresse du smart contract</label>
+                    <input type="text" id="contractAddress" placeholder="0xC1e3621427ad5E90Bc50eBCa38bd89AEB9953ACd">
+                    <small style="color:var(--text-dim);margin-top:5px;display:block;">
+                        Adresse du contrat déployé sur BSC
+                    </small>
+                </div>
+                <button onclick="setContractAddress()" class="secondary">Configurer</button>
+            </div>
+
         </div>
+
+        <footer>
+            <p>BNBKing – Interface communautaire | Réseau BSC</p>
+            <p style="margin-top:8px; font-size:0.85em;">
+                ⚠️ Vérifiez que vous êtes bien sur le réseau Binance Smart Chain (Chain ID: 56)
+            </p>
+        </footer>
     </div>
 
     <script>
         let provider, signer, contract, userAddress;
-        let bnbPriceUSD = 600;
+        let selectedTiles = new Set();
+        let lastClaimTime = 0;
+        let perHourCached = 0;
+        let bnbPriceUSD = 600; // estimation février 2026 – sera mise à jour
 
-        async function connectWallet() {
-            if (!window.ethereum) return alert("Installe MetaMask ou Rabby !");
-            provider = new ethers.providers.Web3Provider(window.ethereum);
-            await provider.send("eth_requestAccounts", []);
-            signer = provider.getSigner();
-            userAddress = await signer.getAddress();
+        const CONTRACT_ABI = [
+            "function buyGold(address _ally) external payable",
+            "function sellGems(uint256 _gems) external",
+            "function swapGemsToGold(uint256 _gems) external",
+            "function placeBuildings(uint16[] calldata _tileIds, uint8 _level) external",
+            "function upgradeBuilding(uint16 _tileId) external",
+            "function battle(uint8 _winChance) external",
+            "function getKingdom(address _player) external view returns (tuple(uint32 gold, uint32 gems, uint32 perHour, uint32 alliesCount, uint32 alliesEarned, uint32 claimTime, uint32 battleTime, uint16 battleId, uint8 battlesInRow, bool isWinInRow, address ally, uint8[360] tiles))",
+            "event GoldBought(address indexed king, address indexed ally, uint256 gold)",
+            "event GemsSold(address indexed king, uint256 gems)",
+            "event GemsSwappedToGold(address indexed king, uint256 gems)",
+            "event BuildingsPlaced(address indexed king, uint16[] tileIds, uint8 level)",
+            "event BuildingUpgraded(address indexed king, uint16 tileId)",
+            "event BattleResult(address indexed king, bool isWin, uint8 winChance, uint256 battleReward)"
+        ];
 
-            document.getElementById('walletAddress').textContent = userAddress.slice(0,6) + '...' + userAddress.slice(-4);
-            document.getElementById('walletAddress').classList.remove('hidden');
-            document.getElementById('connectWalletBtn').style.display = 'none';
-            document.getElementById('disconnectBtn').style.display = 'inline-block';
-            document.getElementById('notConnected').classList.add('hidden');
-            document.getElementById('gameInterface').classList.remove('hidden');
+        // ────────────────────────────────────────────────
+        //  Simulation passive locale (gems + gold)
+        // ────────────────────────────────────────────────
+        async function updatePassiveSimulated() {
+            if (!contract || !userAddress) return;
+            try {
+                const kingdom = await contract.getKingdom(userAddress);
+                lastClaimTime = Number(kingdom.claimTime);
+                perHourCached = Number(kingdom.perHour);
 
-            // Simulation (remplace par ton vrai contrat si besoin)
-            updateGemsConversion();
-            setInterval(updateGemsConversion, 60000);
+                const now = Math.floor(Date.now() / 1000);
+                const hoursPassed = Math.floor((now - lastClaimTime) / 3600);
+
+                if (hoursPassed > 0) {
+                    const earned = hoursPassed * perHourCached;
+                    let gems  = Number(document.getElementById('gemsAmount').textContent.replace(/,/g,'')) || 0;
+                    let gold  = Number(document.getElementById('goldAmount').textContent.replace(/,/g,'')) || 0;
+
+                    gems += earned;
+                    gold += earned;
+
+                    document.getElementById('gemsAmount').textContent = gems.toLocaleString();
+                    document.getElementById('goldAmount').textContent = gold.toLocaleString();
+
+                    updateGemsConversion();
+                }
+            } catch (err) {
+                console.warn("Simulation passive échouée", err);
+            }
         }
 
-        document.getElementById('connectWalletBtn').onclick = connectWallet;
-        document.getElementById('disconnectBtn').onclick = () => {
-            location.reload();
-        };
+        setInterval(updatePassiveSimulated, 60000);
 
-        // Conversion gems → BNB/USDT
+        // ────────────────────────────────────────────────
+        //  Conversion Gems → BNB / USDT (live)
+        // ────────────────────────────────────────────────
         async function updateGemsConversion() {
-            // Valeur simulée (remplace par tes gems réels)
-            const gems = 1234567; // ← mets ici la vraie valeur ou récupère-la du contrat
-            const bnbVal = gems / 1000000;
+            const gemsStr = document.getElementById('gemsAmount').textContent.replace(/,/g,'');
+            const gems = Number(gemsStr) || 0;
+
+            const bnbVal = gems / 1_000_000;
             const usdtVal = bnbVal * bnbPriceUSD;
 
             document.getElementById('gemsValue').textContent = 
                 `≈ ${bnbVal.toFixed(6)} BNB (~${usdtVal.toFixed(2)} USDT)`;
 
+            // Mise à jour prix BNB (CoinGecko)
             try {
                 const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd');
                 const data = await res.json();
-                bnbPriceUSD = data.binancecoin?.usd || bnbPriceUSD;
+                if (data?.binancecoin?.usd) bnbPriceUSD = data.binancecoin.usd;
             } catch {}
         }
+
+        // ────────────────────────────────────────────────
+        //  Wallet + Contrat
+        // ────────────────────────────────────────────────
+        async function connectWallet() {
+            try {
+                if (!window.ethereum) throw new Error("MetaMask / Rabby non détecté");
+
+                let chainId = await window.ethereum.request({method:'eth_chainId'});
+                if (chainId !== '0x38') {
+                    try {
+                        await window.ethereum.request({
+                            method: 'wallet_switchEthereumChain',
+                            params: [{ chainId: '0x38' }]
+                        });
+                    } catch (switchErr) {
+                        if (switchErr.code === 4902) {
+                            await window.ethereum.request({
+                                method: 'wallet_addEthereumChain',
+                                params: [{
+                                    chainId: '0x38',
+                                    chainName: 'Binance Smart Chain',
+                                    nativeCurrency: {name:'BNB', symbol:'BNB', decimals:18},
+                                    rpcUrls: ['https://bsc-dataseed.binance.org/'],
+                                    blockExplorerUrls: ['https://bscscan.com/']
+                                }]
+                            });
+                        } else throw switchErr;
+                    }
+                }
+
+                provider = new ethers.providers.Web3Provider(window.ethereum);
+                await provider.send("eth_requestAccounts", []);
+                signer = provider.getSigner();
+                userAddress = await signer.getAddress();
+
+                document.getElementById('walletAddress').textContent = 
+                    userAddress.slice(0,6) + '...' + userAddress.slice(-4);
+                document.getElementById('walletAddress').classList.remove('hidden');
+                document.getElementById('disconnectBtn').classList.remove('hidden');
+                document.getElementById('connectWalletBtn').classList.add('hidden');
+                document.getElementById('notConnected').classList.add('hidden');
+                document.getElementById('gameInterface').classList.remove('hidden');
+
+                showMessage('Wallet connecté !', 'success');
+
+                const saved = localStorage.getItem('contractAddress');
+                if (saved) {
+                    document.getElementById('contractAddress').value = saved;
+                    await setContractAddress();
+                }
+            } catch (err) {
+                showMessage('Erreur connexion : ' + err.message, 'error');
+            }
+        }
+
+        function disconnectWallet() {
+            provider = signer = contract = userAddress = null;
+            document.getElementById('walletAddress').classList.add('hidden');
+            document.getElementById('disconnectBtn').classList.add('hidden');
+            document.getElementById('connectWalletBtn').classList.remove('hidden');
+            document.getElementById('notConnected').classList.remove('hidden');
+            document.getElementById('gameInterface').classList.add('hidden');
+            showMessage('Wallet déconnecté', 'info');
+        }
+
+        async function setContractAddress() {
+            const addr = document.getElementById('contractAddress').value.trim();
+            if (!ethers.utils.isAddress(addr)) return showMessage('Adresse invalide', 'error');
+
+            contract = new ethers.Contract(addr, CONTRACT_ABI, signer);
+            localStorage.setItem('contractAddress', addr);
+            showMessage('Contrat configuré', 'success');
+            await loadKingdomData();
+        }
+
+        async function loadKingdomData() {
+            if (!contract || !userAddress) return;
+            try {
+                const k = await contract.getKingdom(userAddress);
+                document.getElementById('goldAmount').textContent    = k.gold.toString().replace(/\B(?=(\d{3})+(?!\d))/g,",");
+                document.getElementById('gemsAmount').textContent    = k.gems.toString().replace(/\B(?=(\d{3})+(?!\d))/g,",");
+                document.getElementById('perHourAmount').textContent = k.perHour.toString().replace(/\B(?=(\d{3})+(?!\d))/g,",");
+                document.getElementById('alliesCount').textContent   = k.alliesCount;
+
+                renderBuildingGrid(k.tiles);
+                updateBattleCooldown(k.battleTime);
+                updateGemsConversion();
+                updatePassiveSimulated(); // coup de pouce immédiat
+            } catch (err) {
+                console.error(err);
+                showMessage('Erreur chargement données', 'error');
+            }
+        }
+
+        // ────────────────────────────────────────────────
+        //  Affichage grille bâtiments
+        // ────────────────────────────────────────────────
+        function renderBuildingGrid(tiles) {
+            const grid = document.getElementById('buildingGrid');
+            grid.innerHTML = '';
+            for (let i = 0; i < 360; i++) {
+                const tile = document.createElement('div');
+                tile.className = 'tile';
+                tile.dataset.id = i;
+
+                const num = document.createElement('div');
+                num.className = 'tile-number';
+                num.textContent = i;
+                tile.appendChild(num);
+
+                if (tiles[i] > 0) {
+                    tile.classList.add('occupied');
+                    const lvl = tiles[i] % 10;
+                    const upg = Math.floor(tiles[i] / 10);
+                    const lvlDiv = document.createElement('div');
+                    lvlDiv.className = 'level';
+                    lvlDiv.textContent = lvl + (upg ? `+${upg}` : '');
+                    tile.appendChild(lvlDiv);
+                } else {
+                    tile.onclick = () => toggleTileSelection(i);
+                }
+                grid.appendChild(tile);
+            }
+        }
+
+        function toggleTileSelection(id) {
+            const tile = document.querySelector(`.tile[data-id="${id}"]`);
+            if (selectedTiles.has(id)) {
+                selectedTiles.delete(id);
+                tile.classList.remove('selected');
+            } else {
+                selectedTiles.add(id);
+                tile.classList.add('selected');
+            }
+            document.getElementById('selectedCount').textContent = selectedTiles.size;
+        }
+
+        function clearSelection() {
+            selectedTiles.clear();
+            document.querySelectorAll('.tile.selected').forEach(t => t.classList.remove('selected'));
+            document.getElementById('selectedCount').textContent = 0;
+        }
+
+        function updateBattleCooldown(lastTime) {
+            const cd = document.getElementById('battleCooldown');
+            const now = Math.floor(Date.now()/1000);
+            const diff = now - lastTime;
+            if (diff < 86400) {
+                const rem = 86400 - diff;
+                const h = Math.floor(rem / 3600);
+                const m = Math.floor((rem % 3600)/60);
+                cd.textContent = `⏱️ Cooldown : ${h}h ${m}m`;
+                cd.classList.remove('hidden');
+            } else {
+                cd.classList.add('hidden');
+            }
+        }
+
+        // ────────────────────────────────────────────────
+        //  Actions contrat
+        // ────────────────────────────────────────────────
+        async function buyGold() {
+            if (!contract) return showMessage('Configurez le contrat', 'error');
+            const bnb = document.getElementById('bnbAmount').value;
+            const ally = document.getElementById('allyAddress').value.trim() || ethers.constants.AddressZero;
+            if (!bnb || +bnb <= 0) return showMessage('Montant invalide', 'error');
+
+            try {
+                showMessage('Transaction en cours...', 'info');
+                const tx = await contract.buyGold(ally, {value: ethers.utils.parseEther(bnb)});
+                await tx.wait();
+                showMessage('Or acheté !', 'success');
+                await loadKingdomData();
+            } catch (e) {
+                showMessage('Erreur : ' + (e.reason||e.message), 'error');
+            }
+        }
+
+        async function sellGems() {
+            if (!contract) return showMessage('Configurez le contrat', 'error');
+            const amt = document.getElementById('sellGemsAmount').value;
+            if (!amt || +amt <= 0) return showMessage('Montant invalide', 'error');
+
+            try {
+                showMessage('Transaction en cours...', 'info');
+                const tx = await contract.sellGems(amt);
+                await tx.wait();
+                showMessage('Gemmes vendues !', 'success');
+                await loadKingdomData();
+            } catch (e) {
+                showMessage('Erreur : ' + (e.reason||e.message), 'error');
+            }
+        }
+
+        async function swapGemsToGold() {
+            if (!contract) return showMessage('Configurez le contrat', 'error');
+            const amt = document.getElementById('swapGemsAmount').value;
+            if (!amt || +amt <= 0) return showMessage('Montant invalide', 'error');
+
+            try {
+                showMessage('Transaction en cours...', 'info');
+                const tx = await contract.swapGemsToGold(amt);
+                await tx.wait();
+                showMessage('Échange effectué !', 'success');
+                await loadKingdomData();
+            } catch (e) {
+                showMessage('Erreur : ' + (e.reason||e.message), 'error');
+            }
+        }
+
+        async function placeBuildings() {
+            if (!contract) return showMessage('Configurez le contrat', 'error');
+            if (selectedTiles.size === 0) return showMessage('Sélectionnez au moins une case', 'error');
+
+            const level = +document.getElementById('buildingLevel').value;
+            const ids = Array.from(selectedTiles);
+
+            try {
+                showMessage('Transaction en cours...', 'info');
+                const tx = await contract.placeBuildings(ids, level);
+                await tx.wait();
+                showMessage('Bâtiments construits !', 'success');
+                clearSelection();
+                await loadKingdomData();
+            } catch (e) {
+                showMessage('Erreur : ' + (e.reason||e.message), 'error');
+            }
+        }
+
+        async function upgradeBuilding() {
+            if (!contract) return showMessage('Configurez le contrat', 'error');
+            const id = document.getElementById('upgradeTileId').value;
+            if (!id || +id < 0 || +id > 359) return showMessage('ID invalide (0–359)', 'error');
+
+            try {
+                showMessage('Transaction en cours...', 'info');
+                const tx = await contract.upgradeBuilding(id);
+                await tx.wait();
+                showMessage('Amélioration effectuée !', 'success');
+                await loadKingdomData();
+            } catch (e) {
+                showMessage('Erreur : ' + (e.reason||e.message), 'error');
+            }
+        }
+
+        async function startBattle() {
+            if (!contract) return showMessage('Configurez le contrat', 'error');
+            const chance = +document.getElementById('winChance').value;
+            if (!chance || chance < 40 || chance > 60) return showMessage('Chance doit être entre 40 et 60', 'error');
+
+            try {
+                showMessage('Bataille en cours...', 'info');
+                const tx = await contract.battle(chance);
+                const receipt = await tx.wait();
+                const evt = receipt.events.find(e => e.event === 'BattleResult');
+                if (evt) {
+                    const win = evt.args.isWin;
+                    const rew = evt.args.battleReward.toString();
+                    showMessage(`${win ? '🎉 Victoire !' : '😢 Défaite'} – Récompense : ${rew} Gold`, win ? 'success' : 'info');
+                }
+                await loadKingdomData();
+            } catch (e) {
+                showMessage('Erreur : ' + (e.reason||e.message), 'error');
+            }
+        }
+
+        function showMessage(text, type = 'info') {
+            const c = document.getElementById('messageContainer');
+            const m = document.createElement('div');
+            m.className = `message ${type}`;
+            m.textContent = text;
+            c.appendChild(m);
+            setTimeout(() => m.remove(), 5000);
+        }
+
+        // ────────────────────────────────────────────────
+        //  Événements
+        // ────────────────────────────────────────────────
+        document.getElementById('connectWalletBtn').onclick = connectWallet;
+        document.getElementById('disconnectBtn').onclick   = disconnectWallet;
+
+        setInterval(() => {
+            if (contract && userAddress) loadKingdomData();
+        }, 30000);
     </script>
 </body>
 </html>
