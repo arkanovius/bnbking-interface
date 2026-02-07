@@ -441,27 +441,43 @@ const CONTRACT_ABI = [
 ];
 
 // ────────────────────────────────────────────────
-// Solde BNB du contrat (rafraîchi régulièrement)
+// Solde BNB du contrat – avec fallback RPC
 // ────────────────────────────────────────────────
 
 async function updateContractBalance() {
-    try {
-        // Provider public BSC (pas besoin du wallet)
-        const publicProvider = new ethers.providers.JsonRpcProvider("https://bsc-dataseed.binance.org/");
-        const balanceWei = await publicProvider.getBalance(CONTRACT_ADDRESS);
-        const balanceBNB = ethers.utils.formatEther(balanceWei);
+    const rpcList = [
+        "https://rpc.ankr.com/bsc",
+        "https://bsc-dataseed.binance.org/",
+        "https://bsc-dataseed1.defibit.io",
+        "https://bsc-dataseed1.ninicoin.io",
+        "https://bsc-mainnet.nodereal.io/v1"
+    ];
 
-        const formatted = Number(balanceBNB).toLocaleString(undefined, {
-            minimumFractionDigits: 3,
-            maximumFractionDigits: 4
-        });
+    for (const rpcUrl of rpcList) {
+        try {
+            const pubProvider = new ethers.providers.JsonRpcProvider(rpcUrl);
+            const balanceWei = await pubProvider.getBalance(CONTRACT_ADDRESS);
+            const balanceBNB = ethers.utils.formatEther(balanceWei);
 
-        document.getElementById("contractBNBBalance").textContent = `${formatted} BNB`;
-    } catch (err) {
-        console.error("Erreur lecture solde contrat", err);
-        document.getElementById("contractBNBBalance").textContent = "Erreur";
-        document.getElementById("contractBNBBalance").style.color = "var(--danger)";
+            const formatted = Number(balanceBNB).toLocaleString(undefined, {
+                minimumFractionDigits: 3,
+                maximumFractionDigits: 4
+            });
+
+            const el = document.getElementById("contractBNBBalance");
+            el.textContent = `${formatted} BNB`;
+            el.style.color = "var(--gold)";
+            return; // succès → on sort de la boucle
+        } catch (err) {
+            console.warn(`RPC ${rpcUrl} a échoué :`, err.message);
+            // on continue au suivant
+        }
     }
+
+    // Si TOUS les RPC ont échoué
+    const el = document.getElementById("contractBNBBalance");
+    el.textContent = "Indisponible (tous RPC down)";
+    el.style.color = "var(--danger)";
 }
 
 // ────────────────────────────────────────────────
@@ -613,7 +629,6 @@ async function connectWallet() {
             await setContractAddress();
         }
 
-        // Premier appel solde contrat après connexion
         updateContractBalance();
 
     } catch (err) {
@@ -779,19 +794,19 @@ function showMessage(text, type = "info") {
 }
 
 // ────────────────────────────────────────────────
-// Initialisation et rafraîchissements
+// Initialisation et intervalles
 // ────────────────────────────────────────────────
 
 document.getElementById('connectWalletBtn').onclick = connectWallet;
 document.getElementById('disconnectBtn').onclick = disconnectWallet;
 
-// Rafraîchissement global
+// Rafraîchissement
 setInterval(() => {
     if (contract && userAddress) loadKingdomData();
-    updateContractBalance();           // rafraîchit le solde contrat même sans wallet
-}, 45000);
+    updateContractBalance();
+}, 40000);
 
-// Premier appel solde contrat (dès le chargement de la page)
+// Premier appel solde contrat
 updateContractBalance();
 
     </script>
