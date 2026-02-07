@@ -21,11 +21,7 @@
             --success: #2ed573;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin:0; padding:0; box-sizing:border-box; }
 
         body {
             font-family: 'Karla', sans-serif;
@@ -39,10 +35,8 @@
         body::before {
             content: '';
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background-image: url('./background.png');
             background-size: cover;
             background-position: center;
@@ -55,13 +49,11 @@
         body::after {
             content: '';
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background: 
-                radial-gradient(circle at 20% 30%, rgba(255, 215, 0, 0.03) 0%, transparent 40%),
-                radial-gradient(circle at 80% 70%, rgba(64, 224, 208, 0.03) 0%, transparent 40%);
+                radial-gradient(circle at 20% 30%, rgba(255,215,0,0.03) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(64,224,208,0.03) 0%, transparent 40%);
             pointer-events: none;
             z-index: 0;
         }
@@ -94,7 +86,7 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
             letter-spacing: 2px;
-            text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+            text-shadow: 0 0 30px rgba(255,215,0,0.3);
         }
 
         .wallet-section {
@@ -121,29 +113,15 @@
             overflow: hidden;
         }
 
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4);
-        }
-
-        button:active {
-            transform: translateY(0);
-        }
-
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
+        button:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(255,215,0,0.4); }
+        button:active { transform: translateY(0); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
         button.secondary {
             background: linear-gradient(135deg, var(--gem) 0%, var(--dark-gem) 100%);
             border-color: var(--gem);
         }
-
-        button.secondary:hover {
-            box-shadow: 0 10px 30px rgba(64, 224, 208, 0.4);
-        }
+        button.secondary:hover { box-shadow: 0 10px 30px rgba(64,224,208,0.4); }
 
         button.danger {
             background: linear-gradient(135deg, var(--danger) 0%, #c23616 100%);
@@ -181,17 +159,15 @@
         .stat-card::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 3px;
+            top: 0; left: 0;
+            width: 100%; height: 3px;
             background: linear-gradient(90deg, var(--gold) 0%, var(--gem) 100%);
         }
 
         .stat-card:hover {
             transform: translateY(-5px);
             border-color: var(--gold);
-            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.2);
+            box-shadow: 0 10px 30px rgba(255,215,0,0.2);
         }
 
         .stat-label {
@@ -208,15 +184,8 @@
             font-family: 'Cinzel', serif;
         }
 
-        .stat-value.gold {
-            color: var(--gold);
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
-        }
-
-        .stat-value.gem {
-            color: var(--gem);
-            text-shadow: 0 0 20px rgba(64, 224, 208, 0.5);
-        }
+        .stat-value.gold { color: var(--gold); text-shadow: 0 0 20px rgba(255,215,0,0.5); }
+        .stat-value.gem  { color: var(--gem);  text-shadow: 0 0 20px rgba(64,224,208,0.5); }
 
         .section {
             background: var(--bg-card);
@@ -228,14 +197,8 @@
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity:0; transform:translateY(20px); }
+            to   { opacity:1; transform:translateY(0); }
         }
 
         .section-title {
@@ -247,9 +210,7 @@
             padding-bottom: 15px;
         }
 
-        .input-group {
-            margin-bottom: 20px;
-        }
+        .input-group { margin-bottom: 20px; }
 
         label {
             display: block;
@@ -276,7 +237,7 @@
         input:focus, select:focus {
             outline: none;
             border-color: var(--gold);
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+            box-shadow: 0 0 20px rgba(255,215,0,0.2);
         }
 
         .grid-container {
@@ -315,16 +276,11 @@
         .tile:hover {
             transform: scale(1.15);
             z-index: 10;
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+            box-shadow: 0 0 10px rgba(255,215,0,0.6);
         }
 
-        .tile.empty {
-            background: #1e293b;
-        }
-
-        .tile.empty:hover {
-            background: #334155;
-        }
+        .tile.empty        { background: #1e293b; }
+        .tile.empty:hover  { background: #334155; }
 
         .tile.occupied {
             background: linear-gradient(135deg, var(--gold) 0%, var(--dark-gold) 100%);
@@ -350,12 +306,8 @@
         }
 
         @keyframes pulse {
-            0%, 100% {
-                opacity: 1;
-            }
-            50% {
-                opacity: 0.7;
-            }
+            0%,100% { opacity:1; }
+            50%     { opacity:0.7; }
         }
 
         .action-buttons {
@@ -374,33 +326,13 @@
         }
 
         @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+            from { opacity:0; transform:translateX(-20px); }
+            to   { opacity:1; transform:translateX(0); }
         }
 
-        .message.success {
-            background: rgba(46, 213, 115, 0.2);
-            border: 1px solid var(--success);
-            color: var(--success);
-        }
-
-        .message.error {
-            background: rgba(255, 71, 87, 0.2);
-            border: 1px solid var(--danger);
-            color: var(--danger);
-        }
-
-        .message.info {
-            background: rgba(64, 224, 208, 0.2);
-            border: 1px solid var(--gem);
-            color: var(--gem);
-        }
+        .message.success { background:rgba(46,213,115,0.2); border:1px solid var(--success); color:var(--success); }
+        .message.error   { background:rgba(255,71,87,0.2);  border:1px solid var(--danger);  color:var(--danger); }
+        .message.info    { background:rgba(64,224,208,0.2); border:1px solid var(--gem);     color:var(--gem); }
 
         .battle-section {
             display: grid;
@@ -409,21 +341,13 @@
         }
 
         @media (max-width: 768px) {
-            .battle-section {
-                grid-template-columns: 1fr;
-            }
-            
-            h1 {
-                font-size: 1.8em;
-            }
-            
-            .building-grid {
-                grid-template-columns: repeat(18, 1fr);
-            }
+            .battle-section { grid-template-columns: 1fr; }
+            h1 { font-size: 1.8em; }
+            .building-grid { grid-template-columns: repeat(18, 1fr); }
         }
 
         .info-box {
-            background: rgba(64, 224, 208, 0.1);
+            background: rgba(64,224,208,0.1);
             border: 1px solid var(--gem);
             border-radius: 8px;
             padding: 15px;
@@ -445,9 +369,7 @@
             align-items: flex-end;
         }
 
-        .ally-input-group input {
-            flex: 1;
-        }
+        .ally-input-group input { flex: 1; }
 
         footer {
             text-align: center;
@@ -458,9 +380,7 @@
             font-size: 0.9em;
         }
 
-        .hidden {
-            display: none;
-        }
+        .hidden { display: none; }
 
         .mode-selector {
             display: flex;
@@ -482,9 +402,7 @@
             letter-spacing: 1px;
         }
 
-        .mode-btn:hover {
-            border-color: var(--gold);
-        }
+        .mode-btn:hover { border-color: var(--gold); }
 
         .mode-btn.active {
             background: linear-gradient(135deg, var(--gold) 0%, var(--dark-gold) 100%);
@@ -494,7 +412,7 @@
         }
 
         .cost-display {
-            background: rgba(255, 215, 0, 0.1);
+            background: rgba(255,215,0,0.1);
             border: 2px solid var(--gold);
             border-radius: 12px;
             padding: 20px;
@@ -515,7 +433,7 @@
             font-weight: 700;
             color: var(--gold);
             font-family: 'Cinzel', serif;
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            text-shadow: 0 0 20px rgba(255,215,0,0.5);
         }
 
         .selection-info {
@@ -556,15 +474,15 @@
 
         <div id="notConnected" class="section">
             <h2 class="section-title">Bienvenue sur BNBKing</h2>
-            <p style="line-height: 1.8; color: var(--text-dim);">
+            <p style="line-height:1.8; color:var(--text-dim);">
                 Connectez votre wallet Metamask ou Rabby pour accéder à votre royaume, 
                 retirer vos gems, construire et améliorer vos bâtiments, et participer aux batailles.
             </p>
-            <div style="margin-top: 20px;">
-                <p style="margin-bottom: 10px; font-weight: 600;">⚠️ Important :</p>
-                <ul style="list-style: none; line-height: 2;">
+            <div style="margin-top:20px;">
+                <p style="margin-bottom:10px; font-weight:600;">⚠️ Important :</p>
+                <ul style="list-style:none; line-height:2;">
                     <li>✓ Assurez-vous d'être sur le réseau BSC (Binance Smart Chain)</li>
-                    <li>✓ L'adresse du contrat : 0x864EE1d1B51306e30836B84AdE81e39ebB6e8e0C</li>
+                    <li>✓ Contrat : 0x864EE1d1B51306e30836B84AdE81e39ebB6e8e0C</li>
                     <li>✓ Toutes les transactions nécessitent du BNB pour les frais de gas</li>
                 </ul>
             </div>
@@ -573,22 +491,10 @@
         <div id="gameInterface" class="hidden">
             <!-- Stats -->
             <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-label">💰 Or (Gold)</div>
-                    <div class="stat-value gold" id="goldAmount">0</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">💎 Gemmes (Gems)</div>
-                    <div class="stat-value gem" id="gemsAmount">0</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">⚡ Production / Heure</div>
-                    <div class="stat-value" id="perHourAmount">0</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">👥 Alliés</div>
-                    <div class="stat-value" id="alliesCount">0</div>
-                </div>
+                <div class="stat-card"><div class="stat-label">💰 Or (Gold)</div><div class="stat-value gold" id="goldAmount">0</div></div>
+                <div class="stat-card"><div class="stat-label">💎 Gemmes (Gems)</div><div class="stat-value gem" id="gemsAmount">0</div></div>
+                <div class="stat-card"><div class="stat-label">⚡ Production / Heure</div><div class="stat-value" id="perHourAmount">0</div></div>
+                <div class="stat-card"><div class="stat-label">👥 Alliés</div><div class="stat-value" id="alliesCount">0</div></div>
             </div>
 
             <!-- Buy Gold -->
@@ -597,12 +503,12 @@
                 <div class="input-group">
                     <label>Montant BNB à déposer</label>
                     <input type="number" id="bnbAmount" placeholder="0.1" step="0.01" min="0">
-                    <small style="color: var(--text-dim); margin-top: 5px; display: block;">
+                    <small style="color:var(--text-dim); margin-top:5px; display:block;">
                         Taux de conversion: 1 BNB = 1,000,000 Gold
                     </small>
                 </div>
                 <div class="ally-input-group">
-                    <div style="flex: 1;">
+                    <div style="flex:1;">
                         <label>Adresse Allié (optionnel)</label>
                         <input type="text" id="allyAddress" placeholder="0x...">
                     </div>
@@ -614,26 +520,22 @@
             <div class="grid-container">
                 <div class="section">
                     <h2 class="section-title">💎 Vendre des Gemmes</h2>
-                    <div class="info-box">
-                        💡 Convertissez vos gemmes en BNB au taux: 1,000,000 Gems = 1 BNB
-                    </div>
+                    <div class="info-box">💡 Convertissez vos gemmes en BNB au taux: 1,000,000 Gems = 1 BNB</div>
                     <div class="input-group">
                         <label>Nombre de gemmes à vendre</label>
                         <input type="number" id="sellGemsAmount" placeholder="100000" step="1000" min="0">
                     </div>
-                    <button onclick="sellGems()" style="width: 100%;">Vendre des Gemmes</button>
+                    <button onclick="sellGems()" style="width:100%;">Vendre des Gemmes</button>
                 </div>
 
                 <div class="section">
                     <h2 class="section-title">🔄 Échanger Gems contre Or</h2>
-                    <div class="info-box">
-                        💡 Taux d'échange: 1 Gem = 2 Gold
-                    </div>
+                    <div class="info-box">💡 Taux d'échange: 1 Gem = 2 Gold</div>
                     <div class="input-group">
                         <label>Nombre de gemmes à échanger</label>
                         <input type="number" id="swapGemsAmount" placeholder="10000" step="1000" min="0">
                     </div>
-                    <button onclick="swapGemsToGold()" class="secondary" style="width: 100%;">Échanger</button>
+                    <button onclick="swapGemsToGold()" class="secondary" style="width:100%;">Échanger</button>
                 </div>
             </div>
 
@@ -641,14 +543,9 @@
             <div class="section">
                 <h2 class="section-title">🏰 Gestion des Bâtiments</h2>
                 
-                <!-- Mode Selector -->
                 <div class="mode-selector">
-                    <div class="mode-btn active" id="buildModeBtn" onclick="setMode('build')">
-                        🏗️ Construire des Bâtiments
-                    </div>
-                    <div class="mode-btn" id="upgradeModeBtn" onclick="setMode('upgrade')">
-                        ⬆️ Améliorer un Bâtiment
-                    </div>
+                    <div class="mode-btn active" id="buildModeBtn" onclick="setMode('build')">🏗️ Construire des Bâtiments</div>
+                    <div class="mode-btn" id="upgradeModeBtn" onclick="setMode('upgrade')">⬆️ Améliorer un Bâtiment</div>
                 </div>
 
                 <div class="info-box">
@@ -657,7 +554,6 @@
                     </div>
                 </div>
 
-                <!-- Build Mode Content -->
                 <div id="buildModeContent">
                     <div class="grid-container">
                         <div class="input-group">
@@ -685,14 +581,13 @@
                     </div>
 
                     <div class="action-buttons">
-                        <button onclick="placeBuildings()" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); border-color: #22c55e; color: white;">
+                        <button onclick="placeBuildings()" style="background:linear-gradient(135deg,#22c55e 0%,#16a34a 100%);border-color:#22c55e;color:white;">
                             🏗️ Construire les Bâtiments
                         </button>
                         <button onclick="clearBuildSelection()" class="secondary">❌ Effacer Sélection</button>
                     </div>
                 </div>
 
-                <!-- Upgrade Mode Content -->
                 <div id="upgradeModeContent" class="hidden">
                     <div class="selection-info">
                         <div class="title">🎯 Bâtiment sélectionné</div>
@@ -704,12 +599,11 @@
                         <div class="value">— Gold</div>
                     </div>
 
-                    <button onclick="upgradeBuilding()" style="background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%); border-color: #a855f7; width: 100%; color: white;">
+                    <button onclick="upgradeBuilding()" style="background:linear-gradient(135deg,#a855f7 0%,#7c3aed 100%);border-color:#a855f7;width:100%;color:white;">
                         ⬆️ Améliorer le Bâtiment
                     </button>
                 </div>
 
-                <!-- Building Grid -->
                 <div class="building-grid" id="buildingGrid"></div>
             </div>
 
@@ -727,36 +621,32 @@
                     <div class="input-group">
                         <label>Chance de victoire (40-60%)</label>
                         <input type="number" id="winChance" placeholder="50" min="40" max="60" value="50">
-                        <small style="color: var(--text-dim); margin-top: 5px; display: block;">
+                        <small style="color:var(--text-dim); margin-top:5px; display:block;">
                             Plus faible = meilleure récompense si victoire
                         </small>
                     </div>
-                    <button onclick="startBattle()" style="height: fit-content; align-self: flex-end;">Lancer la Bataille</button>
+                    <button onclick="startBattle()" style="height:fit-content; align-self:flex-end;">Lancer la Bataille</button>
                 </div>
             </div>
         </div>
 
         <footer>
             <p>BNBKing - Interface Communautaire | BSC Network</p>
-            <p style="margin-top: 10px; font-size: 0.85em;">
+            <p style="margin-top:10px; font-size:0.85em;">
                 ⚠️ Contrat: 0x864EE1d1B51306e30836B84AdE81e39ebB6e8e0C | Chain ID: 56
             </p>
         </footer>
     </div>
 
     <script>
-        // Configuration
         const CONTRACT_ADDRESS = "0x864EE1d1B51306e30836B84AdE81e39ebB6e8e0C";
-        
-        let provider;
-        let signer;
-        let contract;
-        let userAddress;
+
+        let provider, signer, contract, userAddress;
         let selectedBuildTiles = new Set();
         let selectedUpgradeTile = null;
         let currentMode = 'build';
         let kingdomData = null;
-        
+
         const CONTRACT_ABI = [
             "function buyGold(address _ally) external payable",
             "function sellGems(uint256 _gems) external",
@@ -767,7 +657,6 @@
             "function getKingdom(address _player) external view returns (tuple(uint32 gold, uint32 gems, uint32 perHour, uint32 alliesCount, uint32 alliesEarned, uint32 claimTime, uint32 battleTime, uint16 battleId, uint8 battlesInRow, bool isWinInRow, address ally, uint8[360] tiles))"
         ];
 
-        // Building costs and stats
         const buildingStats = {
             1: { cost: 10000, perHour: 8 },
             2: { cost: 28000, perHour: 24 },
@@ -779,23 +668,22 @@
             8: { cost: 2000000, perHour: 2300 }
         };
 
-        // Mode Management
         function setMode(mode) {
             currentMode = mode;
             selectedBuildTiles.clear();
             selectedUpgradeTile = null;
-            
+
             document.getElementById('buildModeBtn').classList.toggle('active', mode === 'build');
             document.getElementById('upgradeModeBtn').classList.toggle('active', mode === 'upgrade');
             document.getElementById('buildModeContent').classList.toggle('hidden', mode !== 'build');
             document.getElementById('upgradeModeContent').classList.toggle('hidden', mode !== 'upgrade');
-            
+
             const instructions = mode === 'build' 
                 ? '💡 <strong>Mode Construction :</strong> Cliquez sur les cases vides (grises) pour les sélectionner. Les cases jaunes sont déjà occupées.'
                 : '💡 <strong>Mode Amélioration :</strong> Cliquez sur un bâtiment existant (case jaune) pour le sélectionner et voir son coût d\'amélioration.';
-            
+
             document.getElementById('modeInstructions').innerHTML = instructions;
-            
+
             if (kingdomData) {
                 renderBuildingGrid(kingdomData.tiles);
                 updateBuildCost();
@@ -803,20 +691,16 @@
             }
         }
 
-        // Decode tile value
         function decodeTile(value) {
             if (value === 0) return { level: 0, upgrades: 0 };
-            const level = value % 10;
-            const upgrades = Math.floor(value / 10);
-            return { level, upgrades };
+            return { level: value % 10, upgrades: Math.floor(value / 10) };
         }
 
-        // Update build cost display
         function updateBuildCost() {
             const level = parseInt(document.getElementById('buildingLevel').value);
             const count = selectedBuildTiles.size;
             const stats = buildingStats[level];
-            
+
             if (stats && count > 0) {
                 const totalCost = stats.cost * count;
                 const totalPerHour = stats.perHour * count;
@@ -825,70 +709,62 @@
             } else {
                 document.querySelector('#buildCostDisplay .value').textContent = '0 Gold';
             }
-            
             document.getElementById('selectedBuildCount').textContent = `${count} case(s)`;
         }
 
-        // Update upgrade cost display
         function updateUpgradeCost() {
             if (!kingdomData || selectedUpgradeTile === null) {
                 document.querySelector('#upgradeCostDisplay .value').textContent = '— Gold';
-                document.getElementById('selectedUpgradeInfo').textContent = 
-                    'Cliquez sur un bâtiment (case jaune) dans la grille';
+                document.getElementById('selectedUpgradeInfo').textContent = 'Cliquez sur un bâtiment (case jaune) dans la grille';
                 return;
             }
-            
+
             const tileData = decodeTile(kingdomData.tiles[selectedUpgradeTile]);
-            
+
             if (tileData.level === 0) {
                 document.querySelector('#upgradeCostDisplay .value').textContent = '— Gold';
-                document.getElementById('selectedUpgradeInfo').textContent = 
-                    'Case vide - Utilisez le mode Construction';
+                document.getElementById('selectedUpgradeInfo').textContent = 'Case vide - Utilisez le mode Construction';
                 return;
             }
-            
+
             if (tileData.upgrades >= 9) {
                 document.querySelector('#upgradeCostDisplay .value').textContent = 'MAX';
-                document.getElementById('selectedUpgradeInfo').textContent = 
-                    `Case ${selectedUpgradeTile} : Niveau ${tileData.level} (Max upgrades atteint)`;
+                document.getElementById('selectedUpgradeInfo').textContent = `Case ${selectedUpgradeTile} : Niveau ${tileData.level} (Max upgrades atteint)`;
                 return;
             }
-            
+
             const stats = buildingStats[tileData.level];
             const upgradeCost = Math.floor(stats.cost / 4);
             const upgradePerHour = Math.floor(stats.perHour / 4);
-            
+
             document.querySelector('#upgradeCostDisplay .value').textContent = 
                 `${upgradeCost.toLocaleString()} Gold (+${upgradePerHour}/h)`;
-            
+
             document.getElementById('selectedUpgradeInfo').textContent = 
                 `Case ${selectedUpgradeTile} : Niveau ${tileData.level} + ${tileData.upgrades} upgrade(s)`;
         }
 
-        // Clear build selection
         function clearBuildSelection() {
             selectedBuildTiles.clear();
             updateBuildCost();
-            if (kingdomData) {
-                renderBuildingGrid(kingdomData.tiles);
-            }
+            if (kingdomData) renderBuildingGrid(kingdomData.tiles);
         }
 
-        // Wallet Connection
         async function connectWallet() {
+            const btn = document.getElementById('connectWalletBtn');
+            btn.disabled = true;
+            btn.textContent = "Connexion...";
+
             try {
-                if (typeof window.ethereum === 'undefined') {
+                if (!window.ethereum) {
                     showMessage('❌ Veuillez installer Metamask ou Rabby Wallet', 'error');
                     return;
                 }
 
-                const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+                let chainId = await window.ethereum.request({ method: 'eth_chainId' });
                 if (chainId !== '0x38') {
                     try {
-                        await window.ethereum.request({
-                            method: 'wallet_switchEthereumChain',
-                            params: [{ chainId: '0x38' }],
-                        });
+                        await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0x38' }] });
                     } catch (switchError) {
                         if (switchError.code === 4902) {
                             await window.ethereum.request({
@@ -901,6 +777,8 @@
                                     blockExplorerUrls: ['https://bscscan.com/']
                                 }]
                             });
+                        } else {
+                            throw switchError;
                         }
                     }
                 }
@@ -911,7 +789,7 @@
                 userAddress = await signer.getAddress();
 
                 document.getElementById('walletAddress').textContent = 
-                    userAddress.substring(0, 6) + '...' + userAddress.substring(38);
+                    userAddress.substring(0,6) + '...' + userAddress.substring(38);
                 document.getElementById('walletAddress').classList.remove('hidden');
                 document.getElementById('disconnectBtn').classList.remove('hidden');
                 document.getElementById('connectWalletBtn').classList.add('hidden');
@@ -919,21 +797,23 @@
                 document.getElementById('gameInterface').classList.remove('hidden');
 
                 contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
-                
-                showMessage('✅ Wallet connecté avec succès!', 'success');
+
+                showMessage('✅ Wallet connecté avec succès !', 'success');
                 await loadKingdomData();
+
             } catch (error) {
                 console.error(error);
-                showMessage('❌ Erreur de connexion: ' + error.message, 'error');
+                showMessage('❌ Erreur de connexion : ' + (error.message || 'Erreur inconnue'), 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Connecter Wallet";
             }
         }
 
         function disconnectWallet() {
-            provider = null;
-            signer = null;
-            contract = null;
-            userAddress = null;
-            kingdomData = null;
+            provider = signer = contract = userAddress = kingdomData = null;
+            selectedBuildTiles.clear();
+            selectedUpgradeTile = null;
 
             document.getElementById('walletAddress').classList.add('hidden');
             document.getElementById('disconnectBtn').classList.add('hidden');
@@ -944,13 +824,12 @@
             showMessage('ℹ️ Wallet déconnecté', 'info');
         }
 
-        // Load Kingdom Data
         async function loadKingdomData() {
             if (!contract || !userAddress) return;
 
             try {
                 const kingdom = await contract.getKingdom(userAddress);
-                
+
                 kingdomData = {
                     gold: kingdom.gold.toNumber(),
                     gems: kingdom.gems.toNumber(),
@@ -965,15 +844,11 @@
                     ally: kingdom.ally,
                     tiles: Array.from(kingdom.tiles).map(t => Number(t))
                 };
-                
-                document.getElementById('goldAmount').textContent = 
-                    kingdomData.gold.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                document.getElementById('gemsAmount').textContent = 
-                    kingdomData.gems.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                document.getElementById('perHourAmount').textContent = 
-                    kingdomData.perHour.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                document.getElementById('alliesCount').textContent = 
-                    kingdomData.alliesCount.toString();
+
+                document.getElementById('goldAmount').textContent = kingdomData.gold.toLocaleString();
+                document.getElementById('gemsAmount').textContent = kingdomData.gems.toLocaleString();
+                document.getElementById('perHourAmount').textContent = kingdomData.perHour.toLocaleString();
+                document.getElementById('alliesCount').textContent = kingdomData.alliesCount;
 
                 renderBuildingGrid(kingdomData.tiles);
                 updateBattleCooldown(kingdomData.battleTime);
@@ -981,48 +856,40 @@
                 updateUpgradeCost();
 
             } catch (error) {
-                console.error(error);
-                showMessage('❌ Erreur lors du chargement: ' + error.message, 'error');
+                console.error("Erreur loadKingdomData:", error);
+                showMessage('❌ Impossible de charger les données du royaume (contrat invalide ou réseau incorrect ?)', 'error');
+                renderBuildingGrid(Array(360).fill(0));
             }
         }
 
         function renderBuildingGrid(tiles) {
             const grid = document.getElementById('buildingGrid');
             grid.innerHTML = '';
-            
+
             for (let i = 0; i < 360; i++) {
                 const tile = document.createElement('div');
                 tile.className = 'tile';
                 tile.dataset.id = i;
-                
+
                 const tileData = decodeTile(tiles[i]);
-                
+
                 if (tileData.level === 0) {
                     tile.classList.add('empty');
-                    
                     if (currentMode === 'build') {
-                        if (selectedBuildTiles.has(i)) {
-                            tile.classList.add('selected-build');
-                        }
+                        if (selectedBuildTiles.has(i)) tile.classList.add('selected-build');
                         tile.onclick = () => {
-                            if (selectedBuildTiles.has(i)) {
-                                selectedBuildTiles.delete(i);
-                            } else {
-                                selectedBuildTiles.add(i);
-                            }
+                            if (selectedBuildTiles.has(i)) selectedBuildTiles.delete(i);
+                            else selectedBuildTiles.add(i);
                             updateBuildCost();
                             renderBuildingGrid(tiles);
                         };
                     }
                 } else {
                     tile.classList.add('occupied');
-                    const levelText = tileData.level + (tileData.upgrades > 0 ? '+' + tileData.upgrades : '');
-                    tile.textContent = levelText;
-                    
+                    tile.textContent = tileData.level + (tileData.upgrades > 0 ? '+' + tileData.upgrades : '');
+
                     if (currentMode === 'upgrade') {
-                        if (selectedUpgradeTile === i) {
-                            tile.classList.add('selected-upgrade');
-                        }
+                        if (selectedUpgradeTile === i) tile.classList.add('selected-upgrade');
                         tile.onclick = () => {
                             selectedUpgradeTile = i;
                             updateUpgradeCost();
@@ -1030,7 +897,7 @@
                         };
                     }
                 }
-                
+
                 grid.appendChild(tile);
             }
         }
@@ -1038,200 +905,145 @@
         function updateBattleCooldown(lastBattleTime) {
             const cooldownDiv = document.getElementById('battleCooldown');
             const now = Math.floor(Date.now() / 1000);
-            const timeSinceLastBattle = now - lastBattleTime;
-            const cooldownDuration = 86400;
+            const diff = now - lastBattleTime;
+            const cooldown = 86400;
 
-            if (timeSinceLastBattle < cooldownDuration) {
-                const timeRemaining = cooldownDuration - timeSinceLastBattle;
-                const hours = Math.floor(timeRemaining / 3600);
-                const minutes = Math.floor((timeRemaining % 3600) / 60);
-                cooldownDiv.textContent = `⏱️ Cooldown: ${hours}h ${minutes}m`;
+            if (diff < cooldown) {
+                const remaining = cooldown - diff;
+                const h = Math.floor(remaining / 3600);
+                const m = Math.floor((remaining % 3600) / 60);
+                cooldownDiv.textContent = `⏱️ Cooldown: ${h}h ${m}m`;
                 cooldownDiv.classList.remove('hidden');
             } else {
                 cooldownDiv.classList.add('hidden');
             }
         }
 
-        // Contract Functions
+        // ────────────────────────────────────────────────
+        // Fonctions d'interaction contrat
+        // ────────────────────────────────────────────────
+
         async function buyGold() {
-            if (!contract) {
-                showMessage('❌ Connectez votre wallet d\'abord', 'error');
-                return;
-            }
+            if (!contract) return showMessage('❌ Connectez votre wallet d\'abord', 'error');
+            const amount = document.getElementById('bnbAmount').value;
+            const ally = document.getElementById('allyAddress').value.trim() || ethers.constants.AddressZero;
 
-            const bnbAmount = document.getElementById('bnbAmount').value;
-            const allyAddress = document.getElementById('allyAddress').value.trim() || ethers.constants.AddressZero;
-
-            if (!bnbAmount || parseFloat(bnbAmount) <= 0) {
-                showMessage('❌ Montant invalide', 'error');
-                return;
-            }
+            if (!amount || parseFloat(amount) <= 0) return showMessage('❌ Montant invalide', 'error');
 
             try {
                 showMessage('⏳ Transaction en cours...', 'info');
-                const tx = await contract.buyGold(allyAddress, {
-                    value: ethers.utils.parseEther(bnbAmount)
-                });
+                const tx = await contract.buyGold(ally, { value: ethers.utils.parseEther(amount) });
                 await tx.wait();
-                showMessage('✅ Or acheté avec succès!', 'success');
+                showMessage('✅ Or acheté avec succès !', 'success');
                 await loadKingdomData();
-            } catch (error) {
-                console.error(error);
-                showMessage('❌ Erreur: ' + (error.reason || error.message), 'error');
+            } catch (e) {
+                showMessage('❌ ' + (e.reason || e.message), 'error');
             }
         }
 
         async function sellGems() {
-            if (!contract) {
-                showMessage('❌ Connectez votre wallet d\'abord', 'error');
-                return;
-            }
-
-            const gemsAmount = document.getElementById('sellGemsAmount').value;
-
-            if (!gemsAmount || parseInt(gemsAmount) <= 0) {
-                showMessage('❌ Montant invalide', 'error');
-                return;
-            }
+            if (!contract) return showMessage('❌ Connectez votre wallet d\'abord', 'error');
+            const amt = document.getElementById('sellGemsAmount').value;
+            if (!amt || parseInt(amt) <= 0) return showMessage('❌ Montant invalide', 'error');
 
             try {
                 showMessage('⏳ Transaction en cours...', 'info');
-                const tx = await contract.sellGems(gemsAmount);
+                const tx = await contract.sellGems(amt);
                 await tx.wait();
-                showMessage('✅ Gemmes vendues avec succès!', 'success');
+                showMessage('✅ Gemmes vendues !', 'success');
                 await loadKingdomData();
-            } catch (error) {
-                console.error(error);
-                showMessage('❌ Erreur: ' + (error.reason || error.message), 'error');
+            } catch (e) {
+                showMessage('❌ ' + (e.reason || e.message), 'error');
             }
         }
 
         async function swapGemsToGold() {
-            if (!contract) {
-                showMessage('❌ Connectez votre wallet d\'abord', 'error');
-                return;
-            }
-
-            const gemsAmount = document.getElementById('swapGemsAmount').value;
-
-            if (!gemsAmount || parseInt(gemsAmount) <= 0) {
-                showMessage('❌ Montant invalide', 'error');
-                return;
-            }
+            if (!contract) return showMessage('❌ Connectez votre wallet d\'abord', 'error');
+            const amt = document.getElementById('swapGemsAmount').value;
+            if (!amt || parseInt(amt) <= 0) return showMessage('❌ Montant invalide', 'error');
 
             try {
                 showMessage('⏳ Transaction en cours...', 'info');
-                const tx = await contract.swapGemsToGold(gemsAmount);
+                const tx = await contract.swapGemsToGold(amt);
                 await tx.wait();
-                showMessage('✅ Gemmes échangées avec succès!', 'success');
+                showMessage('✅ Échange effectué !', 'success');
                 await loadKingdomData();
-            } catch (error) {
-                console.error(error);
-                showMessage('❌ Erreur: ' + (error.reason || error.message), 'error');
+            } catch (e) {
+                showMessage('❌ ' + (e.reason || e.message), 'error');
             }
         }
 
         async function placeBuildings() {
-            if (!contract) {
-                showMessage('❌ Connectez votre wallet d\'abord', 'error');
-                return;
-            }
-
-            if (selectedBuildTiles.size === 0) {
-                showMessage('❌ Sélectionnez au moins une case', 'error');
-                return;
-            }
+            if (!contract) return showMessage('❌ Connectez votre wallet d\'abord', 'error');
+            if (selectedBuildTiles.size === 0) return showMessage('❌ Sélectionnez au moins une case', 'error');
 
             const level = parseInt(document.getElementById('buildingLevel').value);
-            const tileIds = Array.from(selectedBuildTiles).sort((a, b) => a - b);
+            const tileIds = Array.from(selectedBuildTiles).sort((a,b)=>a-b);
 
             try {
-                showMessage('⏳ Transaction en cours...', 'info');
+                showMessage('⏳ Construction en cours...', 'info');
                 const tx = await contract.placeBuildings(tileIds, level);
                 await tx.wait();
-                showMessage('✅ Bâtiments construits avec succès!', 'success');
+                showMessage('✅ Bâtiments construits !', 'success');
                 clearBuildSelection();
                 await loadKingdomData();
-            } catch (error) {
-                console.error(error);
-                showMessage('❌ Erreur: ' + (error.reason || error.message), 'error');
+            } catch (e) {
+                showMessage('❌ ' + (e.reason || e.message), 'error');
             }
         }
 
         async function upgradeBuilding() {
-            if (!contract) {
-                showMessage('❌ Connectez votre wallet d\'abord', 'error');
-                return;
-            }
-
-            if (selectedUpgradeTile === null) {
-                showMessage('❌ Sélectionnez un bâtiment à améliorer', 'error');
-                return;
-            }
+            if (!contract) return showMessage('❌ Connectez votre wallet d\'abord', 'error');
+            if (selectedUpgradeTile === null) return showMessage('❌ Sélectionnez un bâtiment à améliorer', 'error');
 
             try {
-                showMessage('⏳ Transaction en cours...', 'info');
+                showMessage('⏳ Amélioration en cours...', 'info');
                 const tx = await contract.upgradeBuilding(selectedUpgradeTile);
                 await tx.wait();
-                showMessage('✅ Bâtiment amélioré avec succès!', 'success');
+                showMessage('✅ Bâtiment amélioré !', 'success');
                 selectedUpgradeTile = null;
                 await loadKingdomData();
-            } catch (error) {
-                console.error(error);
-                showMessage('❌ Erreur: ' + (error.reason || error.message), 'error');
+            } catch (e) {
+                showMessage('❌ ' + (e.reason || e.message), 'error');
             }
         }
 
         async function startBattle() {
-            if (!contract) {
-                showMessage('❌ Connectez votre wallet d\'abord', 'error');
-                return;
-            }
+            if (!contract) return showMessage('❌ Connectez votre wallet d\'abord', 'error');
 
-            const winChance = document.getElementById('winChance').value;
-
-            if (!winChance || parseInt(winChance) < 40 || parseInt(winChance) > 60) {
-                showMessage('❌ Chance de victoire doit être entre 40 et 60', 'error');
-                return;
-            }
+            const chance = parseInt(document.getElementById('winChance').value);
+            if (isNaN(chance) || chance < 40 || chance > 60) return showMessage('❌ Chance doit être entre 40 et 60', 'error');
 
             try {
-                showMessage('⏳ Lancement de la bataille...', 'info');
-                const tx = await contract.battle(winChance);
-                const receipt = await tx.wait();
-                showMessage('✅ Bataille terminée!', 'success');
+                showMessage('⏳ Bataille en cours...', 'info');
+                const tx = await contract.battle(chance);
+                await tx.wait();
+                showMessage('✅ Bataille terminée !', 'success');
                 await loadKingdomData();
-            } catch (error) {
-                console.error(error);
-                showMessage('❌ Erreur: ' + (error.reason || error.message), 'error');
+            } catch (e) {
+                showMessage('❌ ' + (e.reason || e.message), 'error');
             }
         }
 
-        // Utility Functions
         function showMessage(text, type) {
             const container = document.getElementById('messageContainer');
-            const message = document.createElement('div');
-            message.className = `message ${type}`;
-            message.textContent = text;
-            container.appendChild(message);
-
-            setTimeout(() => {
-                message.remove();
-            }, 5000);
+            const msg = document.createElement('div');
+            msg.className = `message ${type}`;
+            msg.textContent = text;
+            container.appendChild(msg);
+            setTimeout(() => msg.remove(), 6000);
         }
 
-        // Event Listeners
+        // Listeners
         document.getElementById('connectWalletBtn').addEventListener('click', connectWallet);
         document.getElementById('disconnectBtn').addEventListener('click', disconnectWallet);
 
-        // Auto-refresh every 30 seconds
+        // Auto-refresh
         setInterval(() => {
-            if (contract && userAddress) {
-                loadKingdomData();
-            }
+            if (contract && userAddress) loadKingdomData();
         }, 30000);
 
-        // Initialize
+        // Init
         setMode('build');
     </script>
 </body>
