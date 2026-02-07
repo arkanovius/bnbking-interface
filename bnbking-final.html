@@ -43,6 +43,22 @@
             left: 0;
             width: 100%;
             height: 100%;
+            background-image: url('background.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: 
                 radial-gradient(circle at 20% 30%, rgba(255, 215, 0, 0.03) 0%, transparent 40%),
                 radial-gradient(circle at 80% 70%, rgba(64, 224, 208, 0.03) 0%, transparent 40%);
@@ -289,32 +305,56 @@
             transition: all 0.2s ease;
             position: relative;
             min-width: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
         }
 
         .tile:hover {
-            background: var(--gold);
-            transform: scale(1.1);
+            transform: scale(1.15);
             z-index: 10;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+        }
+
+        .tile.empty {
+            background: #1e293b;
+        }
+
+        .tile.empty:hover {
+            background: #334155;
         }
 
         .tile.occupied {
             background: linear-gradient(135deg, var(--gold) 0%, var(--dark-gold) 100%);
-            cursor: default;
-        }
-
-        .tile.selected {
-            background: var(--gem);
-            box-shadow: 0 0 10px var(--gem);
-        }
-
-        .tile.occupied .level {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 0.7em;
-            font-weight: bold;
+            cursor: pointer;
             color: var(--bg-dark);
+        }
+
+        .tile.occupied:hover {
+            background: linear-gradient(135deg, #FFE55C 0%, #DAA520 100%);
+        }
+
+        .tile.selected-build {
+            background: var(--gem);
+            box-shadow: 0 0 15px var(--gem);
+            animation: pulse 1s infinite;
+        }
+
+        .tile.selected-upgrade {
+            background: #a855f7;
+            box-shadow: 0 0 15px #a855f7;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
         }
 
         .action-buttons {
@@ -435,6 +475,73 @@
         .hidden {
             display: none;
         }
+
+        .mode-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .mode-btn {
+            padding: 10px 20px;
+            background: var(--bg-dark);
+            border: 2px solid var(--border);
+            color: var(--text-dim);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(135deg, var(--gold) 0%, var(--dark-gold) 100%);
+            border-color: var(--gold);
+            color: var(--bg-dark);
+            font-weight: 700;
+        }
+
+        .cost-display {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid var(--gold);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .cost-display .label {
+            font-size: 0.85em;
+            color: var(--text-dim);
+            margin-bottom: 5px;
+        }
+
+        .cost-display .value {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: var(--gold);
+            font-family: 'Cinzel', serif;
+        }
+
+        .selection-info {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .selection-info .title {
+            font-size: 0.9em;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .selection-info .details {
+            font-size: 1.1em;
+            color: var(--text-light);
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
@@ -535,47 +642,77 @@
 
             <!-- Buildings -->
             <div class="section">
-                <h2 class="section-title">🏰 Construire des Bâtiments</h2>
-                <div class="info-box">
-                    💡 Cliquez sur les cases vides (grises) pour les sélectionner, puis choisissez un niveau et construisez.
-                    Les cases jaunes sont déjà occupées.
-                </div>
-                <div class="grid-container">
-                    <div class="input-group">
-                        <label>Niveau du bâtiment</label>
-                        <select id="buildingLevel">
-                            <option value="1">Niveau 1 - 10,000 Gold (8/h)</option>
-                            <option value="2">Niveau 2 - 28,000 Gold (24/h)</option>
-                            <option value="3">Niveau 3 - 54,000 Gold (48/h)</option>
-                            <option value="4">Niveau 4 - 100,000 Gold (96/h)</option>
-                            <option value="5">Niveau 5 - 250,000 Gold (248/h)</option>
-                            <option value="6">Niveau 6 - 500,000 Gold (520/h)</option>
-                            <option value="7">Niveau 7 - 1,000,000 Gold (1,100/h)</option>
-                            <option value="8">Niveau 8 - 2,000,000 Gold (2,300/h)</option>
-                        </select>
+                <h2 class="section-title">🏰 Gestion des Bâtiments</h2>
+                
+                <!-- Mode Selector -->
+                <div class="mode-selector">
+                    <div class="mode-btn active" id="buildModeBtn" onclick="setMode('build')">
+                        🏗️ Construire
                     </div>
-                    <div>
-                        <label>Cases sélectionnées: <span id="selectedCount">0</span></label>
-                        <div class="action-buttons">
-                            <button onclick="placeBuildings()">Construire</button>
-                            <button onclick="clearSelection()" class="secondary">Effacer Sélection</button>
+                    <div class="mode-btn" id="upgradeModeBtn" onclick="setMode('upgrade')">
+                        ⬆️ Améliorer
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <div id="modeInstructions">
+                        💡 <strong>Mode Construction :</strong> Cliquez sur les cases vides (grises) pour sélectionner où construire vos bâtiments. Les cases jaunes sont déjà occupées.
+                    </div>
+                </div>
+
+                <!-- Build Mode Content -->
+                <div id="buildModeContent">
+                    <div class="grid-container">
+                        <div class="input-group">
+                            <label>Niveau du bâtiment</label>
+                            <select id="buildingLevel" onchange="updateBuildCost()">
+                                <option value="1">Niveau 1 - 10,000 Gold (8/h)</option>
+                                <option value="2">Niveau 2 - 28,000 Gold (24/h)</option>
+                                <option value="3">Niveau 3 - 54,000 Gold (48/h)</option>
+                                <option value="4">Niveau 4 - 100,000 Gold (96/h)</option>
+                                <option value="5">Niveau 5 - 250,000 Gold (248/h)</option>
+                                <option value="6">Niveau 6 - 500,000 Gold (520/h)</option>
+                                <option value="7">Niveau 7 - 1,000,000 Gold (1,100/h)</option>
+                                <option value="8">Niveau 8 - 2,000,000 Gold (2,300/h)</option>
+                            </select>
+                        </div>
+                        <div class="selection-info">
+                            <div class="title">Cases sélectionnées</div>
+                            <div class="details" id="selectedBuildCount">0 case(s)</div>
                         </div>
                     </div>
-                </div>
-                <div class="building-grid" id="buildingGrid"></div>
-            </div>
 
-            <!-- Upgrade Building -->
-            <div class="section">
-                <h2 class="section-title">⬆️ Améliorer un Bâtiment</h2>
-                <div class="info-box">
-                    💡 Coût d'amélioration = 25% du coût de base. Chaque amélioration augmente la production de 25%.
+                    <div class="cost-display" id="buildCostDisplay">
+                        <div class="label">Coût Total de Construction</div>
+                        <div class="value">0 Gold</div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button onclick="placeBuildings()" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); border-color: #22c55e;">
+                            🏗️ Construire les Bâtiments
+                        </button>
+                        <button onclick="clearBuildSelection()" class="secondary">Effacer Sélection</button>
+                    </div>
                 </div>
-                <div class="input-group">
-                    <label>ID de la case à améliorer (0-359)</label>
-                    <input type="number" id="upgradeTileId" placeholder="0" min="0" max="359">
+
+                <!-- Upgrade Mode Content -->
+                <div id="upgradeModeContent" class="hidden">
+                    <div class="selection-info">
+                        <div class="title">Bâtiment sélectionné</div>
+                        <div class="details" id="selectedUpgradeInfo">Cliquez sur un bâtiment (case jaune) pour le sélectionner</div>
+                    </div>
+
+                    <div class="cost-display" id="upgradeCostDisplay">
+                        <div class="label">Coût d'Amélioration</div>
+                        <div class="value">— Gold</div>
+                    </div>
+
+                    <button onclick="upgradeBuilding()" style="background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%); border-color: #a855f7; width: 100%;">
+                        ⬆️ Améliorer le Bâtiment
+                    </button>
                 </div>
-                <button onclick="upgradeBuilding()">Améliorer</button>
+
+                <div class="building-grid" id="buildingGrid"></div>
             </div>
 
             <!-- Battle -->
@@ -592,429 +729,4 @@
                     <div class="input-group">
                         <label>Chance de victoire (40-60%)</label>
                         <input type="number" id="winChance" placeholder="50" min="40" max="60" value="50">
-                        <small style="color: var(--text-dim); margin-top: 5px; display: block;">
-                            Plus faible = meilleure récompense si victoire
-                        </small>
-                    </div>
-                    <button onclick="startBattle()" style="height: fit-content; align-self: flex-end;">Lancer la Bataille</button>
-                </div>
-            </div>
-
-            <!-- Contract Config -->
-            <div class="section">
-                <h2 class="section-title">⚙️ Configuration du Contrat</h2>
-                <div class="input-group">
-                    <label>Adresse du contrat BNBKing</label>
-                    <input type="text" id="contractAddress" placeholder="0xC1e3621427ad5E90Bc50eBCa38bd89AEB9953ACd">
-                    <small style="color: var(--text-dim); margin-top: 5px; display: block;">
-                        Entrez l'adresse du smart contract déployé sur BSC
-                    </small>
-                </div>
-                <button onclick="setContractAddress()" class="secondary">Configurer</button>
-            </div>
-        </div>
-
-        <footer>
-            <p>BNBKing - Interface Communautaire | BSC Network</p>
-            <p style="margin-top: 10px; font-size: 0.85em;">
-                ⚠️ Assurez-vous d'être connecté au réseau BSC (Chain ID: 56)
-            </p>
-        </footer>
-    </div>
-
-    <script>
-        // Configuration
-        let provider;
-        let signer;
-        let contract;
-        let userAddress;
-        let selectedTiles = new Set();
-        
-        const CONTRACT_ABI = [
-            "function buyGold(address _ally) external payable",
-            "function sellGems(uint256 _gems) external",
-            "function swapGemsToGold(uint256 _gems) external",
-            "function placeBuildings(uint16[] calldata _tileIds, uint8 _level) external",
-            "function upgradeBuilding(uint16 _tileId) external",
-            "function battle(uint8 _winChance) external",
-            "function getKingdom(address _player) external view returns (tuple(uint32 gold, uint32 gems, uint32 perHour, uint32 alliesCount, uint32 alliesEarned, uint32 claimTime, uint32 battleTime, uint16 battleId, uint8 battlesInRow, bool isWinInRow, address ally, uint8[360] tiles))",
-            "event GoldBought(address indexed king, address indexed ally, uint256 gold)",
-            "event GemsSold(address indexed king, uint256 gems)",
-            "event GemsSwappedToGold(address indexed king, uint256 gems)",
-            "event BuildingsPlaced(address indexed king, uint16[] tileIds, uint8 level)",
-            "event BuildingUpgraded(address indexed king, uint16 tileId)",
-            "event BattleResult(address indexed king, bool isWin, uint8 winChance, uint256 battleReward)"
-        ];
-
-        // Wallet Connection
-        async function connectWallet() {
-            try {
-                if (typeof window.ethereum === 'undefined') {
-                    showMessage('Veuillez installer Metamask ou Rabby Wallet', 'error');
-                    return;
-                }
-
-                // Check if on BSC network
-                const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-                if (chainId !== '0x38') { // 0x38 = 56 in hex (BSC Mainnet)
-                    try {
-                        await window.ethereum.request({
-                            method: 'wallet_switchEthereumChain',
-                            params: [{ chainId: '0x38' }],
-                        });
-                    } catch (switchError) {
-                        // Chain not added, add it
-                        if (switchError.code === 4902) {
-                            await window.ethereum.request({
-                                method: 'wallet_addEthereumChain',
-                                params: [{
-                                    chainId: '0x38',
-                                    chainName: 'BSC Mainnet',
-                                    nativeCurrency: {
-                                        name: 'BNB',
-                                        symbol: 'BNB',
-                                        decimals: 18
-                                    },
-                                    rpcUrls: ['https://bsc-dataseed.binance.org/'],
-                                    blockExplorerUrls: ['https://bscscan.com/']
-                                }]
-                            });
-                        }
-                    }
-                }
-
-                provider = new ethers.providers.Web3Provider(window.ethereum);
-                await provider.send("eth_requestAccounts", []);
-                signer = provider.getSigner();
-                userAddress = await signer.getAddress();
-
-                document.getElementById('walletAddress').textContent = 
-                    userAddress.substring(0, 6) + '...' + userAddress.substring(38);
-                document.getElementById('walletAddress').classList.remove('hidden');
-                document.getElementById('disconnectBtn').classList.remove('hidden');
-                document.getElementById('connectWalletBtn').classList.add('hidden');
-                document.getElementById('notConnected').classList.add('hidden');
-                document.getElementById('gameInterface').classList.remove('hidden');
-
-                showMessage('Wallet connecté avec succès!', 'success');
-
-                // Try to load contract if address is in localStorage
-                const savedAddress = localStorage.getItem('contractAddress');
-                if (savedAddress) {
-                    document.getElementById('contractAddress').value = savedAddress;
-                    await setContractAddress();
-                }
-            } catch (error) {
-                console.error(error);
-                showMessage('Erreur de connexion: ' + error.message, 'error');
-            }
-        }
-
-        function disconnectWallet() {
-            provider = null;
-            signer = null;
-            contract = null;
-            userAddress = null;
-
-            document.getElementById('walletAddress').classList.add('hidden');
-            document.getElementById('disconnectBtn').classList.add('hidden');
-            document.getElementById('connectWalletBtn').classList.remove('hidden');
-            document.getElementById('notConnected').classList.remove('hidden');
-            document.getElementById('gameInterface').classList.add('hidden');
-
-            showMessage('Wallet déconnecté', 'info');
-        }
-
-        async function setContractAddress() {
-            const address = document.getElementById('contractAddress').value.trim();
-            if (!ethers.utils.isAddress(address)) {
-                showMessage('Adresse invalide', 'error');
-                return;
-            }
-
-            contract = new ethers.Contract(address, CONTRACT_ABI, signer);
-            localStorage.setItem('contractAddress', address);
-            showMessage('Contrat configuré avec succès', 'success');
-            
-            await loadKingdomData();
-        }
-
-        // Load Kingdom Data
-        async function loadKingdomData() {
-            if (!contract || !userAddress) return;
-
-            try {
-                const kingdom = await contract.getKingdom(userAddress);
-                
-                document.getElementById('goldAmount').textContent = kingdom.gold.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                document.getElementById('gemsAmount').textContent = kingdom.gems.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                document.getElementById('perHourAmount').textContent = kingdom.perHour.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                document.getElementById('alliesCount').textContent = kingdom.alliesCount.toString();
-
-                // Load building grid
-                renderBuildingGrid(kingdom.tiles);
-
-                // Check battle cooldown
-                updateBattleCooldown(kingdom.battleTime);
-
-            } catch (error) {
-                console.error(error);
-                showMessage('Erreur lors du chargement des données: ' + error.message, 'error');
-            }
-        }
-
-        function renderBuildingGrid(tiles) {
-            const grid = document.getElementById('buildingGrid');
-            grid.innerHTML = '';
-            
-            for (let i = 0; i < 360; i++) {
-                const tile = document.createElement('div');
-                tile.className = 'tile';
-                tile.dataset.id = i;
-                
-                if (tiles[i] > 0) {
-                    tile.classList.add('occupied');
-                    const level = tiles[i] % 10;
-                    const upgrades = Math.floor(tiles[i] / 10);
-                    const levelDiv = document.createElement('div');
-                    levelDiv.className = 'level';
-                    levelDiv.textContent = level + (upgrades > 0 ? '+' + upgrades : '');
-                    tile.appendChild(levelDiv);
-                } else {
-                    tile.onclick = () => toggleTileSelection(i);
-                }
-                
-                grid.appendChild(tile);
-            }
-        }
-
-        function toggleTileSelection(tileId) {
-            const tile = document.querySelector(`.tile[data-id="${tileId}"]`);
-            if (selectedTiles.has(tileId)) {
-                selectedTiles.delete(tileId);
-                tile.classList.remove('selected');
-            } else {
-                selectedTiles.add(tileId);
-                tile.classList.add('selected');
-            }
-            document.getElementById('selectedCount').textContent = selectedTiles.size;
-        }
-
-        function clearSelection() {
-            selectedTiles.clear();
-            document.querySelectorAll('.tile.selected').forEach(tile => {
-                tile.classList.remove('selected');
-            });
-            document.getElementById('selectedCount').textContent = 0;
-        }
-
-        function updateBattleCooldown(lastBattleTime) {
-            const cooldownDiv = document.getElementById('battleCooldown');
-            const now = Math.floor(Date.now() / 1000);
-            const timeSinceLastBattle = now - lastBattleTime;
-            const cooldownDuration = 86400; // 24 hours
-
-            if (timeSinceLastBattle < cooldownDuration) {
-                const timeRemaining = cooldownDuration - timeSinceLastBattle;
-                const hours = Math.floor(timeRemaining / 3600);
-                const minutes = Math.floor((timeRemaining % 3600) / 60);
-                cooldownDiv.textContent = `⏱️ Cooldown: ${hours}h ${minutes}m`;
-                cooldownDiv.classList.remove('hidden');
-            } else {
-                cooldownDiv.classList.add('hidden');
-            }
-        }
-
-        // Contract Functions
-        async function buyGold() {
-            if (!contract) {
-                showMessage('Veuillez configurer l\'adresse du contrat', 'error');
-                return;
-            }
-
-            const bnbAmount = document.getElementById('bnbAmount').value;
-            const allyAddress = document.getElementById('allyAddress').value.trim() || ethers.constants.AddressZero;
-
-            if (!bnbAmount || parseFloat(bnbAmount) <= 0) {
-                showMessage('Montant invalide', 'error');
-                return;
-            }
-
-            try {
-                showMessage('Transaction en cours...', 'info');
-                const tx = await contract.buyGold(allyAddress, {
-                    value: ethers.utils.parseEther(bnbAmount)
-                });
-                await tx.wait();
-                showMessage('Or acheté avec succès!', 'success');
-                await loadKingdomData();
-            } catch (error) {
-                console.error(error);
-                showMessage('Erreur: ' + (error.reason || error.message), 'error');
-            }
-        }
-
-        async function sellGems() {
-            if (!contract) {
-                showMessage('Veuillez configurer l\'adresse du contrat', 'error');
-                return;
-            }
-
-            const gemsAmount = document.getElementById('sellGemsAmount').value;
-
-            if (!gemsAmount || parseInt(gemsAmount) <= 0) {
-                showMessage('Montant invalide', 'error');
-                return;
-            }
-
-            try {
-                showMessage('Transaction en cours...', 'info');
-                const tx = await contract.sellGems(gemsAmount);
-                await tx.wait();
-                showMessage('Gemmes vendues avec succès!', 'success');
-                await loadKingdomData();
-            } catch (error) {
-                console.error(error);
-                showMessage('Erreur: ' + (error.reason || error.message), 'error');
-            }
-        }
-
-        async function swapGemsToGold() {
-            if (!contract) {
-                showMessage('Veuillez configurer l\'adresse du contrat', 'error');
-                return;
-            }
-
-            const gemsAmount = document.getElementById('swapGemsAmount').value;
-
-            if (!gemsAmount || parseInt(gemsAmount) <= 0) {
-                showMessage('Montant invalide', 'error');
-                return;
-            }
-
-            try {
-                showMessage('Transaction en cours...', 'info');
-                const tx = await contract.swapGemsToGold(gemsAmount);
-                await tx.wait();
-                showMessage('Gemmes échangées avec succès!', 'success');
-                await loadKingdomData();
-            } catch (error) {
-                console.error(error);
-                showMessage('Erreur: ' + (error.reason || error.message), 'error');
-            }
-        }
-
-        async function placeBuildings() {
-            if (!contract) {
-                showMessage('Veuillez configurer l\'adresse du contrat', 'error');
-                return;
-            }
-
-            if (selectedTiles.size === 0) {
-                showMessage('Sélectionnez au moins une case', 'error');
-                return;
-            }
-
-            const level = document.getElementById('buildingLevel').value;
-            const tileIds = Array.from(selectedTiles);
-
-            try {
-                showMessage('Transaction en cours...', 'info');
-                const tx = await contract.placeBuildings(tileIds, level);
-                await tx.wait();
-                showMessage('Bâtiments construits avec succès!', 'success');
-                clearSelection();
-                await loadKingdomData();
-            } catch (error) {
-                console.error(error);
-                showMessage('Erreur: ' + (error.reason || error.message), 'error');
-            }
-        }
-
-        async function upgradeBuilding() {
-            if (!contract) {
-                showMessage('Veuillez configurer l\'adresse du contrat', 'error');
-                return;
-            }
-
-            const tileId = document.getElementById('upgradeTileId').value;
-
-            if (tileId === '' || parseInt(tileId) < 0 || parseInt(tileId) > 359) {
-                showMessage('ID de case invalide', 'error');
-                return;
-            }
-
-            try {
-                showMessage('Transaction en cours...', 'info');
-                const tx = await contract.upgradeBuilding(tileId);
-                await tx.wait();
-                showMessage('Bâtiment amélioré avec succès!', 'success');
-                await loadKingdomData();
-            } catch (error) {
-                console.error(error);
-                showMessage('Erreur: ' + (error.reason || error.message), 'error');
-            }
-        }
-
-        async function startBattle() {
-            if (!contract) {
-                showMessage('Veuillez configurer l\'adresse du contrat', 'error');
-                return;
-            }
-
-            const winChance = document.getElementById('winChance').value;
-
-            if (!winChance || parseInt(winChance) < 40 || parseInt(winChance) > 60) {
-                showMessage('Chance de victoire doit être entre 40 et 60', 'error');
-                return;
-            }
-
-            try {
-                showMessage('Transaction en cours...', 'info');
-                const tx = await contract.battle(winChance);
-                const receipt = await tx.wait();
-                
-                // Parse battle result from events
-                const event = receipt.events.find(e => e.event === 'BattleResult');
-                if (event) {
-                    const isWin = event.args.isWin;
-                    const reward = event.args.battleReward;
-                    showMessage(
-                        `${isWin ? '🎉 Victoire!' : '😢 Défaite'} Récompense: ${reward.toString()} Gold`,
-                        isWin ? 'success' : 'info'
-                    );
-                }
-                
-                await loadKingdomData();
-            } catch (error) {
-                console.error(error);
-                showMessage('Erreur: ' + (error.reason || error.message), 'error');
-            }
-        }
-
-        // Utility Functions
-        function showMessage(text, type) {
-            const container = document.getElementById('messageContainer');
-            const message = document.createElement('div');
-            message.className = `message ${type}`;
-            message.textContent = text;
-            container.appendChild(message);
-
-            setTimeout(() => {
-                message.remove();
-            }, 5000);
-        }
-
-        // Event Listeners
-        document.getElementById('connectWalletBtn').addEventListener('click', connectWallet);
-        document.getElementById('disconnectBtn').addEventListener('click', disconnectWallet);
-
-        // Auto-refresh every 30 seconds
-        setInterval(() => {
-            if (contract && userAddress) {
-                loadKingdomData();
-            }
-        }, 30000);
-    </script>
-</body>
-</html>
+                        <small style="color: var(--text-dim); margin-t
