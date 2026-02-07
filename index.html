@@ -58,79 +58,55 @@
             z-index: 0;
         }
 
-        .container { max-width: 1400px; margin: 0 auto; padding: 20px; position: relative; z-index: 1; }
+        .container { max-width:1400px; margin:0 auto; padding:20px; position:relative; z-index:1; }
 
         header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 30px 0;
-            border-bottom: 2px solid var(--border);
-            margin-bottom: 40px;
-            flex-wrap: wrap;
-            gap: 20px;
+            display:flex; justify-content:space-between; align-items:center;
+            padding:30px 0; border-bottom:2px solid var(--border); margin-bottom:40px;
+            flex-wrap:wrap; gap:20px;
         }
 
         h1 {
-            font-family: 'Cinzel', serif;
-            font-size: 2.5em;
-            font-weight: 900;
-            background: linear-gradient(135deg, var(--gold) 0%, var(--dark-gold) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: 2px;
-            text-shadow: 0 0 30px rgba(255,215,0,0.3);
+            font-family:'Cinzel',serif; font-size:2.5em; font-weight:900;
+            background:linear-gradient(135deg,var(--gold) 0%,var(--dark-gold) 100%);
+            -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+            letter-spacing:2px; text-shadow:0 0 30px rgba(255,215,0,0.3);
         }
 
-        .wallet-section { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
+        .wallet-section { display:flex; gap:15px; align-items:center; flex-wrap:wrap; }
 
         button {
-            padding: 12px 28px;
-            border: 2px solid var(--gold);
-            background: linear-gradient(135deg, var(--gold) 0%, var(--dark-gold) 100%);
-            color: var(--bg-dark);
-            font-weight: 600;
-            font-size: 1em;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            padding:12px 28px; border:2px solid var(--gold);
+            background:linear-gradient(135deg,var(--gold) 0%,var(--dark-gold) 100%);
+            color:var(--bg-dark); font-weight:600; font-size:1em; cursor:pointer;
+            border-radius:8px; transition:all 0.3s ease; text-transform:uppercase;
+            letter-spacing:1px;
         }
 
-        button:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(255,215,0,0.4); }
-        button:active { transform: translateY(0); }
-        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        button:hover { transform:translateY(-2px); box-shadow:0 10px 30px rgba(255,215,0,0.4); }
+        button:active { transform:translateY(0); }
+        button:disabled { opacity:0.5; cursor:not-allowed; }
 
-        button.secondary { background: linear-gradient(135deg, var(--gem) 0%, var(--dark-gem) 100%); border-color: var(--gem); }
-        button.secondary:hover { box-shadow: 0 10px 30px rgba(64,224,208,0.4); }
+        button.secondary { background:linear-gradient(135deg,var(--gem) 0%,var(--dark-gem) 100%); border-color:var(--gem); }
+        button.secondary:hover { box-shadow:0 10px 30px rgba(64,224,208,0.4); }
 
-        button.danger { background: linear-gradient(135deg, var(--danger) 0%, #c23616 100%); border-color: var(--danger); color: white; }
+        button.danger { background:linear-gradient(135deg,var(--danger) 0%,#c23616 100%); border-color:var(--danger); color:white; }
 
         .wallet-address {
-            padding: 10px 20px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-family: monospace;
-            font-size: 0.9em;
-            color: var(--text-dim);
+            padding:10px 20px; background:var(--bg-card); border:1px solid var(--border);
+            border-radius:8px; font-family:monospace; font-size:0.9em; color:var(--text-dim);
         }
 
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 40px; }
+        .stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:20px; margin-bottom:40px; }
 
         .stat-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 25px;
-            position: relative;
-            overflow: hidden;
+            background:var(--bg-card); border:1px solid var(--border); border-radius:12px;
+            padding:25px; position:relative; overflow:hidden;
         }
 
         .stat-card::before { content:''; position:absolute; top:0; left:0; width:100%; height:3px; background:linear-gradient(90deg,var(--gold),var(--gem)); }
 
-        .stat-card:hover { transform: translateY(-5px); border-color: var(--gold); box-shadow: 0 10px 30px rgba(255,215,0,0.2); }
+        .stat-card:hover { transform:translateY(-5px); border-color:var(--gold); box-shadow:0 10px 30px rgba(255,215,0,0.2); }
 
         .stat-label { font-size:0.9em; color:var(--text-dim); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; }
 
@@ -140,46 +116,27 @@
         .stat-value.gem  { color:var(--gem);  text-shadow:0 0 20px rgba(64,224,208,0.5); }
 
         .section {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 30px;
-            margin-bottom: 30px;
-            animation: fadeIn 0.5s ease;
+            background:var(--bg-card); border:1px solid var(--border); border-radius:12px;
+            padding:30px; margin-bottom:30px; animation:fadeIn 0.5s ease;
         }
 
         @keyframes fadeIn { from {opacity:0; transform:translateY(20px);} to {opacity:1; transform:translateY(0);} }
 
         .section-title {
-            font-family: 'Cinzel', serif;
-            font-size: 1.8em;
-            margin-bottom: 25px;
-            color: var(--gold);
-            border-bottom: 2px solid var(--border);
-            padding-bottom: 15px;
+            font-family:'Cinzel',serif; font-size:1.8em; margin-bottom:25px;
+            color:var(--gold); border-bottom:2px solid var(--border); padding-bottom:15px;
         }
 
-        .input-group { margin-bottom: 20px; }
+        .input-group { margin-bottom:20px; }
 
         label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--text-dim);
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.85em;
-            letter-spacing: 1px;
+            display:block; margin-bottom:8px; color:var(--text-dim); font-weight:600;
+            text-transform:uppercase; font-size:0.85em; letter-spacing:1px;
         }
 
         input, select {
-            width: 100%;
-            padding: 14px;
-            background: var(--bg-dark);
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            color: var(--text-light);
-            font-size: 1em;
-            transition: all 0.3s ease;
+            width:100%; padding:14px; background:var(--bg-dark); border:2px solid var(--border);
+            border-radius:8px; color:var(--text-light); font-size:1em; transition:all 0.3s ease;
         }
 
         input:focus, select:focus { outline:none; border-color:var(--gold); box-shadow:0 0 20px rgba(255,215,0,0.2); }
@@ -187,29 +144,16 @@
         .grid-container { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:20px; }
 
         .building-grid {
-            display: grid;
-            grid-template-columns: repeat(20, 1fr);
-            gap: 2px;
-            background: var(--bg-dark);
-            padding: 10px;
-            border-radius: 8px;
-            margin-top: 20px;
-            max-width: 100%;
-            overflow-x: auto;
+            display:grid; grid-template-columns:repeat(20,1fr); gap:2px;
+            background:var(--bg-dark); padding:10px; border-radius:8px; margin-top:20px;
+            max-width:100%; overflow-x:auto;
         }
 
         .tile {
-            aspect-ratio: 1;
-            background: var(--border);
-            border: 1px solid var(--bg-dark);
-            cursor: pointer;
-            transition: all 0.2s ease;
-            min-width: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            font-weight: bold;
+            aspect-ratio:1; background:var(--border); border:1px solid var(--bg-dark);
+            cursor:pointer; transition:all 0.2s ease; min-width:20px;
+            display:flex; align-items:center; justify-content:center;
+            font-size:10px; font-weight:bold;
         }
 
         .tile:hover { transform:scale(1.15); z-index:10; box-shadow:0 0 10px rgba(255,215,0,0.6); }
@@ -218,23 +162,20 @@
         .tile.empty:hover { background:#334155; }
 
         .tile.occupied {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--dark-gold) 100%);
-            color: var(--bg-dark);
+            background:linear-gradient(135deg,var(--gold) 0%,var(--dark-gold) 100%);
+            color:var(--bg-dark);
         }
 
-        .tile.occupied:hover { background: linear-gradient(135deg, #FFE55C 0%, #DAA520 100%); }
+        .tile.occupied:hover { background:linear-gradient(135deg,#FFE55C 0%,#DAA520 100%); }
 
         .tile.selected-build {
-            background: var(--gem) !important;
-            box-shadow: 0 0 15px var(--gem);
-            animation: pulse 1s infinite;
+            background:var(--gem)!important; box-shadow:0 0 15px var(--gem);
+            animation:pulse 1s infinite;
         }
 
         .tile.selected-upgrade {
-            background: #a855f7 !important;
-            box-shadow: 0 0 15px #a855f7;
-            animation: pulse 1s infinite;
-            color: white !important;
+            background:#a855f7!important; box-shadow:0 0 15px #a855f7;
+            animation:pulse 1s infinite; color:white!important;
         }
 
         @keyframes pulse { 0%,100% {opacity:1} 50% {opacity:0.7} }
@@ -242,11 +183,8 @@
         .action-buttons { display:flex; gap:15px; margin-top:20px; flex-wrap:wrap; }
 
         .message {
-            padding: 15px 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-weight: 600;
-            animation: slideIn 0.3s ease;
+            padding:15px 20px; border-radius:8px; margin-bottom:20px; font-weight:600;
+            animation:slideIn 0.3s ease;
         }
 
         @keyframes slideIn { from {opacity:0; transform:translateX(-20px);} to {opacity:1; transform:translateX(0);} }
@@ -264,13 +202,8 @@
         }
 
         .info-box {
-            background: rgba(64,224,208,0.1);
-            border: 1px solid var(--gem);
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 20px;
-            font-size: 0.9em;
-            line-height: 1.6;
+            background:rgba(64,224,208,0.1); border:1px solid var(--gem); border-radius:8px;
+            padding:15px; margin-bottom:20px; font-size:0.9em; line-height:1.6;
         }
 
         .cooldown-timer { font-size:1.2em; color:var(--danger); font-weight:bold; margin:10px 0; }
@@ -279,12 +212,8 @@
         .ally-input-group input { flex:1; }
 
         footer {
-            text-align: center;
-            padding: 30px;
-            margin-top: 50px;
-            border-top: 1px solid var(--border);
-            color: var(--text-dim);
-            font-size: 0.9em;
+            text-align:center; padding:30px; margin-top:50px;
+            border-top:1px solid var(--border); color:var(--text-dim); font-size:0.9em;
         }
 
         .hidden { display:none; }
@@ -292,53 +221,33 @@
         .mode-selector { display:flex; gap:10px; margin-bottom:20px; }
 
         .mode-btn {
-            flex:1;
-            padding:15px 20px;
-            background:var(--bg-dark);
-            border:2px solid var(--border);
-            color:var(--text-dim);
-            border-radius:8px;
-            cursor:pointer;
-            transition:all 0.3s ease;
-            font-weight:600;
-            text-transform:uppercase;
-            letter-spacing:1px;
+            flex:1; padding:15px 20px; background:var(--bg-dark); border:2px solid var(--border);
+            color:var(--text-dim); border-radius:8px; cursor:pointer; transition:all 0.3s ease;
+            font-weight:600; text-transform:uppercase; letter-spacing:1px;
         }
 
         .mode-btn:hover { border-color:var(--gold); }
 
         .mode-btn.active {
             background:linear-gradient(135deg,var(--gold) 0%,var(--dark-gold) 100%);
-            border-color:var(--gold);
-            color:var(--bg-dark);
-            font-weight:700;
+            border-color:var(--gold); color:var(--bg-dark); font-weight:700;
         }
 
         .cost-display {
-            background:rgba(255,215,0,0.1);
-            border:2px solid var(--gold);
-            border-radius:12px;
-            padding:20px;
-            margin:15px 0;
-            text-align:center;
+            background:rgba(255,215,0,0.1); border:2px solid var(--gold); border-radius:12px;
+            padding:20px; margin:15px 0; text-align:center;
         }
 
         .cost-display .label { font-size:0.85em; color:var(--text-dim); margin-bottom:8px; text-transform:uppercase; letter-spacing:1px; }
 
         .cost-display .value {
-            font-size:1.8em;
-            font-weight:700;
-            color:var(--gold);
-            font-family:'Cinzel',serif;
+            font-size:1.8em; font-weight:700; color:var(--gold); font-family:'Cinzel',serif;
             text-shadow:0 0 20px rgba(255,215,0,0.5);
         }
 
         .selection-info {
-            background:var(--bg-dark);
-            border:1px solid var(--border);
-            border-radius:8px;
-            padding:15px;
-            margin:15px 0;
+            background:var(--bg-dark); border:1px solid var(--border); border-radius:8px;
+            padding:15px; margin:15px 0;
         }
 
         .selection-info .title { font-size:0.9em; color:var(--text-dim); margin-bottom:8px; text-transform:uppercase; letter-spacing:1px; }
@@ -516,33 +425,32 @@
                 </div>
             </div>
 
-            <!-- CONFIGURATION DU CONTRAT (option avancée) -->
+            <!-- CONFIGURATION DU CONTRAT (comme dans l'ancienne version) -->
             <div class="section">
-                <h2 class="section-title">⚙️ Configuration avancée du contrat</h2>
+                <h2 class="section-title">⚙️ Configuration du Contrat</h2>
                 <div class="info-box">
-                    <strong>Adresse par défaut :</strong> 0x864EE1d1B51306e30836B84AdE81e39ebB6e8e0C<br>
-                    <strong>Ne modifiez que si :</strong> vous testez sur un autre réseau, une fourche, ou un contrat différent.<br>
-                    Laissez vide ou à la valeur par défaut dans la plupart des cas.
+                    <strong>Adresse actuelle :</strong> colle l'adresse du smart contract BNBKing ici<br>
+                    <strong>Si tu ne sais pas :</strong> demande dans le groupe ou vérifie sur bscscan.com
                 </div>
                 <div class="input-group">
-                    <label>Adresse du smart contract</label>
-                    <input type="text" id="customContractAddress" placeholder="0x864EE1d1B51306e30836B84AdE81e39ebB6e8e0C" value="0x864EE1d1B51306e30836B84AdE81e39ebB6e8e0C">
+                    <label>Adresse du smart contract BNBKing</label>
+                    <input type="text" id="contractAddress" placeholder="0x864EE1d1B51306e30836B84AdE81e39ebB6e8e0C">
                 </div>
-                <button onclick="applyCustomContract()" class="secondary">Appliquer cette adresse</button>
+                <button onclick="setContractAddress()" class="secondary" style="width:100%; padding:16px; font-size:1.1em;">
+                    Configurer & Charger mes stats
+                </button>
             </div>
         </div>
 
         <footer>
             <p>BNBKing - Interface Communautaire | BSC Network</p>
             <p style="margin-top:10px; font-size:0.85em;">
-                ⚠️ Contrat par défaut : 0x864EE1d1B51306e30836B84AdE81e39ebB6e8e0C | Chain ID: 56
+                ⚠️ Contrat par défaut suggéré : 0x864EE1d1B51306e30836B84AdE81e39ebB6e8e0C | Chain ID: 56
             </p>
         </footer>
     </div>
 
     <script>
-        let CONTRACT_ADDRESS = "0x864EE1d1B51306e30836B84AdE81e39ebB6e8e0C";
-
         let provider, signer, contract, userAddress;
         let selectedBuildTiles = new Set();
         let selectedUpgradeTile = null;
@@ -570,10 +478,7 @@
             8: { cost: 2000000, perHour: 2300 }
         };
 
-        // ────────────────────────────────────────────────
-        // Fonctions de mode et grille
-        // ────────────────────────────────────────────────
-
+        // Mode et grille (inchangé)
         function setMode(mode) {
             currentMode = mode;
             selectedBuildTiles.clear();
@@ -584,11 +489,9 @@
             document.getElementById('buildModeContent').classList.toggle('hidden', mode !== 'build');
             document.getElementById('upgradeModeContent').classList.toggle('hidden', mode !== 'upgrade');
 
-            const instructions = mode === 'build' 
+            document.getElementById('modeInstructions').innerHTML = mode === 'build' 
                 ? '💡 <strong>Mode Construction :</strong> Cliquez sur les cases vides (grises) pour les sélectionner. Les cases jaunes sont déjà occupées.'
                 : '💡 <strong>Mode Amélioration :</strong> Cliquez sur un bâtiment existant (case jaune) pour le sélectionner et voir son coût d\'amélioration.';
-
-            document.getElementById('modeInstructions').innerHTML = instructions;
 
             if (kingdomData) {
                 renderBuildingGrid(kingdomData.tiles);
@@ -656,10 +559,7 @@
             if (kingdomData) renderBuildingGrid(kingdomData.tiles);
         }
 
-        // ────────────────────────────────────────────────
-        // Connexion Wallet
-        // ────────────────────────────────────────────────
-
+        // Connexion Wallet + auto-config si déjà sauvegardé
         async function connectWallet() {
             const btn = document.getElementById('connectWalletBtn');
             btn.disabled = true;
@@ -706,11 +606,17 @@
                 document.getElementById('notConnected').classList.add('hidden');
                 document.getElementById('gameInterface').classList.remove('hidden');
 
-                // Initialisation avec l'adresse par défaut
-                contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
-
                 showMessage('✅ Wallet connecté avec succès !', 'success');
-                await loadKingdomData();
+
+                // TENTATIVE AUTO-CHARGEMENT SI ADRESSE SAUVEGARDÉE
+                const savedAddress = localStorage.getItem('contractAddress');
+                if (savedAddress && ethers.utils.isAddress(savedAddress)) {
+                    document.getElementById('contractAddress').value = savedAddress;
+                    showMessage('Adresse précédemment utilisée détectée → chargement automatique...', 'info');
+                    await setContractAddress();
+                } else {
+                    showMessage('⚠️ Collez l’adresse du contrat ci-dessous et cliquez sur "Configurer & Charger mes stats"', 'info');
+                }
 
             } catch (error) {
                 console.error(error);
@@ -735,10 +641,23 @@
             showMessage('ℹ️ Wallet déconnecté', 'info');
         }
 
-        // ────────────────────────────────────────────────
-        // Chargement des données du royaume
-        // ────────────────────────────────────────────────
+        // Configuration du contrat (comme dans l’ancienne version)
+        async function setContractAddress() {
+            const address = document.getElementById('contractAddress').value.trim();
 
+            if (!ethers.utils.isAddress(address)) {
+                showMessage('❌ Adresse Ethereum invalide', 'error');
+                return;
+            }
+
+            contract = new ethers.Contract(address, CONTRACT_ABI, signer);
+            localStorage.setItem('contractAddress', address);
+
+            showMessage('✅ Contrat configuré → chargement des données...', 'success');
+            await loadKingdomData();
+        }
+
+        // Chargement des données (inchangé)
         async function loadKingdomData() {
             if (!contract || !userAddress) return;
 
@@ -772,15 +691,12 @@
 
             } catch (error) {
                 console.error("Erreur loadKingdomData:", error);
-                showMessage('❌ Impossible de charger les données du royaume (contrat invalide, réseau incorrect ou contrat non déployé ?)', 'error');
+                showMessage('❌ Impossible de charger les données du royaume (contrat invalide ou réseau incorrect ?)', 'error');
                 renderBuildingGrid(Array(360).fill(0));
             }
         }
 
-        // ────────────────────────────────────────────────
-        // Affichage de la grille
-        // ────────────────────────────────────────────────
-
+        // Rendu grille (inchangé)
         function renderBuildingGrid(tiles) {
             const grid = document.getElementById('buildingGrid');
             grid.innerHTML = '';
@@ -838,44 +754,9 @@
             }
         }
 
-        // ────────────────────────────────────────────────
-        // Changement d'adresse contrat (fonction appelée par le bouton)
-        // ────────────────────────────────────────────────
-
-        function applyCustomContract() {
-            const input = document.getElementById('customContractAddress');
-            const newAddr = input.value.trim();
-
-            if (!newAddr) {
-                showMessage('❌ Veuillez entrer une adresse', 'error');
-                return;
-            }
-
-            if (!ethers.utils.isAddress(newAddr)) {
-                showMessage('❌ Adresse Ethereum invalide', 'error');
-                return;
-            }
-
-            if (newAddr.toLowerCase() === CONTRACT_ADDRESS.toLowerCase()) {
-                showMessage('ℹ️ C\'est déjà l\'adresse utilisée', 'info');
-                return;
-            }
-
-            CONTRACT_ADDRESS = newAddr;
-            contract = new ethers.Contract(newAddr, CONTRACT_ABI, signer);
-
-            showMessage(`✅ Nouvelle adresse appliquée : ${newAddr.substring(0,6)}...${newAddr.substring(38)}`, 'success');
-            
-            // On recharge immédiatement les données avec le nouveau contrat
-            loadKingdomData();
-        }
-
-        // ────────────────────────────────────────────────
-        // Fonctions d'interaction avec le smart contract
-        // ────────────────────────────────────────────────
-
+        // Fonctions contrat (inchangées)
         async function buyGold() {
-            if (!contract) return showMessage('❌ Connectez votre wallet d\'abord', 'error');
+            if (!contract) return showMessage('❌ Configurez le contrat d\'abord', 'error');
             const amount = document.getElementById('bnbAmount').value;
             const ally = document.getElementById('allyAddress').value.trim() || ethers.constants.AddressZero;
 
@@ -893,7 +774,7 @@
         }
 
         async function sellGems() {
-            if (!contract) return showMessage('❌ Connectez votre wallet d\'abord', 'error');
+            if (!contract) return showMessage('❌ Configurez le contrat d\'abord', 'error');
             const amt = document.getElementById('sellGemsAmount').value;
             if (!amt || parseInt(amt) <= 0) return showMessage('❌ Montant invalide', 'error');
 
@@ -909,7 +790,7 @@
         }
 
         async function swapGemsToGold() {
-            if (!contract) return showMessage('❌ Connectez votre wallet d\'abord', 'error');
+            if (!contract) return showMessage('❌ Configurez le contrat d\'abord', 'error');
             const amt = document.getElementById('swapGemsAmount').value;
             if (!amt || parseInt(amt) <= 0) return showMessage('❌ Montant invalide', 'error');
 
@@ -925,7 +806,7 @@
         }
 
         async function placeBuildings() {
-            if (!contract) return showMessage('❌ Connectez votre wallet d\'abord', 'error');
+            if (!contract) return showMessage('❌ Configurez le contrat d\'abord', 'error');
             if (selectedBuildTiles.size === 0) return showMessage('❌ Sélectionnez au moins une case', 'error');
 
             const level = parseInt(document.getElementById('buildingLevel').value);
@@ -944,7 +825,7 @@
         }
 
         async function upgradeBuilding() {
-            if (!contract) return showMessage('❌ Connectez votre wallet d\'abord', 'error');
+            if (!contract) return showMessage('❌ Configurez le contrat d\'abord', 'error');
             if (selectedUpgradeTile === null) return showMessage('❌ Sélectionnez un bâtiment à améliorer', 'error');
 
             try {
@@ -960,7 +841,7 @@
         }
 
         async function startBattle() {
-            if (!contract) return showMessage('❌ Connectez votre wallet d\'abord', 'error');
+            if (!contract) return showMessage('❌ Configurez le contrat d\'abord', 'error');
 
             const chance = parseInt(document.getElementById('winChance').value);
             if (isNaN(chance) || chance < 40 || chance > 60) return showMessage('❌ Chance doit être entre 40 et 60', 'error');
@@ -989,12 +870,12 @@
         document.getElementById('connectWalletBtn').addEventListener('click', connectWallet);
         document.getElementById('disconnectBtn').addEventListener('click', disconnectWallet);
 
-        // Auto-refresh toutes les 30 secondes
+        // Auto-refresh
         setInterval(() => {
             if (contract && userAddress) loadKingdomData();
         }, 30000);
 
-        // Initialisation
+        // Init
         setMode('build');
     </script>
 </body>
