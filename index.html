@@ -467,16 +467,14 @@ async function updateContractBalance() {
             const el = document.getElementById("contractBNBBalance");
             el.textContent = `${formatted} BNB`;
             el.style.color = "var(--gold)";
-            return; // succès → on sort de la boucle
+            return; // succès
         } catch (err) {
             console.warn(`RPC ${rpcUrl} a échoué :`, err.message);
-            // on continue au suivant
         }
     }
 
-    // Si TOUS les RPC ont échoué
     const el = document.getElementById("contractBNBBalance");
-    el.textContent = "Indisponible (tous RPC down)";
+    el.textContent = "Indisponible (RPCs down)";
     el.style.color = "var(--danger)";
 }
 
@@ -547,6 +545,16 @@ async function upgradeSelectedTile() {
 }
 
 // ────────────────────────────────────────────────
+// Fonctions manquantes ou importantes
+// ────────────────────────────────────────────────
+
+function clearSelection() {
+    selectedTiles.clear();
+    updateBuildCost();
+    document.querySelectorAll('.tile.selected-build').forEach(t => t.classList.remove('selected-build'));
+}
+
+// ────────────────────────────────────────────────
 // Grille bâtiments
 // ────────────────────────────────────────────────
 
@@ -597,7 +605,7 @@ function renderBuildingGrid(tiles) {
 }
 
 // ────────────────────────────────────────────────
-// Fonctions wallet / contrat / données
+// Wallet / Contrat / Données
 // ────────────────────────────────────────────────
 
 async function connectWallet() {
@@ -800,13 +808,11 @@ function showMessage(text, type = "info") {
 document.getElementById('connectWalletBtn').onclick = connectWallet;
 document.getElementById('disconnectBtn').onclick = disconnectWallet;
 
-// Rafraîchissement
 setInterval(() => {
     if (contract && userAddress) loadKingdomData();
     updateContractBalance();
 }, 40000);
 
-// Premier appel solde contrat
 updateContractBalance();
 
     </script>
