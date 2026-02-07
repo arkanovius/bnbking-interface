@@ -729,4 +729,539 @@
                     <div class="input-group">
                         <label>Chance de victoire (40-60%)</label>
                         <input type="number" id="winChance" placeholder="50" min="40" max="60" value="50">
-                        <small style="color: var(--text-dim); margin-t
+                        <small style="color: var(--text-dim); margin-top: 5px; display: block;">
+                            Plus faible = meilleure récompense si victoire
+                        </small>
+                    </div>
+                    <button onclick="startBattle()" style="height: fit-content; align-self: flex-end;">Lancer la Bataille</button>
+                </div>
+            </div>
+
+            <!-- Contract Config -->
+            <div class="section">
+                <h2 class="section-title">⚙️ Configuration du Contrat</h2>
+                <div class="input-group">
+                    <label>Adresse du contrat BNBKing</label>
+                    <input type="text" id="contractAddress" placeholder="0x864EE1d1B51306e30836B84AdE81e39ebB6e8e0C">
+                    <small style="color: var(--text-dim); margin-top: 5px; display: block;">
+                        Entrez l'adresse du smart contract déployé sur BSC
+                    </small>
+                </div>
+                <button onclick="setContractAddress()" class="secondary">Configurer</button>
+            </div>
+        </div>
+
+        <footer>
+            <p>BNBKing - Interface Communautaire | BSC Network</p>
+            <p style="margin-top: 10px; font-size: 0.85em;">
+                ⚠️ Assurez-vous d'être connecté au réseau BSC (Chain ID: 56)
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // Configuration
+        let provider;
+        let signer;
+        let contract;
+        let userAddress;
+        let selectedBuildTiles = new Set();
+        let selectedUpgradeTile = null;
+        let currentMode = 'build';
+        let kingdomData = null;
+        
+        const CONTRACT_ABI = [
+            "function buyGold(address _ally) external payable",
+            "function sellGems(uint256 _gems) external",
+            "function swapGemsToGold(uint256 _gems) external",
+            "function placeBuildings(uint16[] calldata _tileIds, uint8 _level) external",
+            "function upgradeBuilding(uint16 _tileId) external",
+            "function battle(uint8 _winChance) external",
+            "function getKingdom(address _player) external view returns (tuple(uint32 gold, uint32 gems, uint32 perHour, uint32 alliesCount, uint32 alliesEarned, uint32 claimTime, uint32 battleTime, uint16 battleId, uint8 battlesInRow, bool isWinInRow, address ally, uint8[360] tiles))",
+            "event GoldBought(address indexed king, address indexed ally, uint256 gold)",
+            "event GemsSold(address indexed king, uint256 gems)",
+            "event GemsSwappedToGold(address indexed king, uint256 gems)",
+            "event BuildingsPlaced(address indexed king, uint16[] tileIds, uint8 level)",
+            "event BuildingUpgraded(address indexed king, uint16 tileId)",
+            "event BattleResult(address indexed king, bool isWin, uint8 winChance, uint256 battleReward)"
+        ];
+
+        // Building costs and stats
+        const buildingStats = {
+            1: { cost: 10000, perHour: 8 },
+            2: { cost: 28000, perHour: 24 },
+            3: { cost: 54000, perHour: 48 },
+            4: { cost: 100000, perHour: 96 },
+            5: { cost: 250000, perHour: 248 },
+            6: { cost: 500000, perHour: 520 },
+            7: { cost: 1000000, perHour: 1100 },
+            8: { cost: 2000000, perHour: 2300 }
+        };
+
+        // Mode Management
+        function setMode(mode) {
+            currentMode = mode;
+            
+            // Clear selections
+            selectedBuildTiles.clear();
+            selectedUpgradeTile = null;
+            
+            // Update UI
+            document.getElementById('buildModeBtn').classList.toggle('active', mode === 'build');
+            document.getElementById('upgradeModeBtn').classList.toggle('active', mode === 'upgrade');
+            
+            document.getElementById('buildModeContent').classList.toggle('hidden', mode !== 'build');
+            document.getElementById('upgradeModeContent').classList.toggle('hidden', mode !== 'upgrade');
+            
+            // Update instructions
+            const instructions = mode === 'build' 
+                ? '💡 <strong>Mode Construction :</strong> Cliquez sur les cases vides (grises) pour sélectionner où construire vos bâtiments.'
+                : '💡 <strong>Mode Amélioration :</strong> Cliquez sur un bâtiment existant (case jaune) pour le sélectionner et voir son coût d\'amélioration.';
+            
+            document.getElementById('modeInstructions').innerHTML = instructions;
+            
+            // Re-render grid
+            if (kingdomData) {
+                renderBuildingGrid(kingdomData.tiles);
+            }
+        }
+
+        // Decode tile value
+        function decodeTile(value) {
+            if (value === 0) return { level: 0, upgrades: 0 };
+            const level = value % 10;
+            const upgrades = Math.floor(value / 10);
+            return { level, upgrades };
+        }
+
+        // Update build cost display
+        function updateBuildCost() {
+            const level = parseInt(document.getElementById('buildingLevel').value);
+            const count = selectedBuildTiles.size;
+            const stats = buildingStats[level];
+            
+            if (stats && count > 0) {
+                const totalCost = stats.cost * count;
+                const totalPerHour = stats.perHour * count;
+                document.querySelector('#buildCostDisplay .value').textContent = 
+                    `${totalCost.toLocaleString()} Gold (+${totalPerHour}/h)`;
+            } else {
+                document.querySelector('#buildCostDisplay .value').textContent = '0 Gold';
+            }
+            
+            document.getElementById('selectedBuildCount').textContent = `${count} case(s)`;
+        }
+
+        // Update upgrade cost display
+        function updateUpgradeCost() {
+            if (!kingdomData || selectedUpgradeTile === null) {
+                document.querySelector('#upgradeCostDisplay .value').textContent = '— Gold';
+                document.getElementById('selectedUpgradeInfo').textContent = 
+                    'Cliquez sur un bâtiment (case jaune) pour le sélectionner';
+                return;
+            }
+            
+            const tileData = decodeTile(kingdomData.tiles[selectedUpgradeTile]);
+            
+            if (tileData.level === 0) {
+                document.querySelector('#upgradeCostDisplay .value').textContent = '— Gold';
+                document.getElementById('selectedUpgradeInfo').textContent = 
+                    'Case vide - Utilisez le mode Construction';
+                return;
+            }
+            
+            if (tileData.upgrades >= 9) {
+                document.querySelector('#upgradeCostDisplay .value').textContent = 'MAX';
+                document.getElementById('selectedUpgradeInfo').textContent = 
+                    `Case ${selectedUpgradeTile} : Niveau ${tileData.level} (Max upgrades atteint)`;
+                return;
+            }
+            
+            const stats = buildingStats[tileData.level];
+            const upgradeCost = Math.floor(stats.cost / 4);
+            const upgradePerHour = Math.floor(stats.perHour / 4);
+            
+            document.querySelector('#upgradeCostDisplay .value').textContent = 
+                `${upgradeCost.toLocaleString()} Gold (+${upgradePerHour}/h)`;
+            
+            document.getElementById('selectedUpgradeInfo').textContent = 
+                `Case ${selectedUpgradeTile} : Niveau ${tileData.level} + ${tileData.upgrades} upgrade(s)`;
+        }
+
+        // Clear build selection
+        function clearBuildSelection() {
+            selectedBuildTiles.clear();
+            updateBuildCost();
+            if (kingdomData) {
+                renderBuildingGrid(kingdomData.tiles);
+            }
+        }
+
+        // Wallet Connection
+        async function connectWallet() {
+            try {
+                if (typeof window.ethereum === 'undefined') {
+                    showMessage('Veuillez installer Metamask ou Rabby Wallet', 'error');
+                    return;
+                }
+
+                // Check if on BSC network
+                const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+                if (chainId !== '0x38') {
+                    try {
+                        await window.ethereum.request({
+                            method: 'wallet_switchEthereumChain',
+                            params: [{ chainId: '0x38' }],
+                        });
+                    } catch (switchError) {
+                        if (switchError.code === 4902) {
+                            await window.ethereum.request({
+                                method: 'wallet_addEthereumChain',
+                                params: [{
+                                    chainId: '0x38',
+                                    chainName: 'BSC Mainnet',
+                                    nativeCurrency: {
+                                        name: 'BNB',
+                                        symbol: 'BNB',
+                                        decimals: 18
+                                    },
+                                    rpcUrls: ['https://bsc-dataseed.binance.org/'],
+                                    blockExplorerUrls: ['https://bscscan.com/']
+                                }]
+                            });
+                        }
+                    }
+                }
+
+                provider = new ethers.providers.Web3Provider(window.ethereum);
+                await provider.send("eth_requestAccounts", []);
+                signer = provider.getSigner();
+                userAddress = await signer.getAddress();
+
+                document.getElementById('walletAddress').textContent = 
+                    userAddress.substring(0, 6) + '...' + userAddress.substring(38);
+                document.getElementById('walletAddress').classList.remove('hidden');
+                document.getElementById('disconnectBtn').classList.remove('hidden');
+                document.getElementById('connectWalletBtn').classList.add('hidden');
+                document.getElementById('notConnected').classList.add('hidden');
+                document.getElementById('gameInterface').classList.remove('hidden');
+
+                showMessage('Wallet connecté avec succès!', 'success');
+
+                const savedAddress = localStorage.getItem('contractAddress');
+                if (savedAddress) {
+                    document.getElementById('contractAddress').value = savedAddress;
+                    await setContractAddress();
+                }
+            } catch (error) {
+                console.error(error);
+                showMessage('Erreur de connexion: ' + error.message, 'error');
+            }
+        }
+
+        function disconnectWallet() {
+            provider = null;
+            signer = null;
+            contract = null;
+            userAddress = null;
+            kingdomData = null;
+
+            document.getElementById('walletAddress').classList.add('hidden');
+            document.getElementById('disconnectBtn').classList.add('hidden');
+            document.getElementById('connectWalletBtn').classList.remove('hidden');
+            document.getElementById('notConnected').classList.remove('hidden');
+            document.getElementById('gameInterface').classList.add('hidden');
+
+            showMessage('Wallet déconnecté', 'info');
+        }
+
+        async function setContractAddress() {
+            const address = document.getElementById('contractAddress').value.trim();
+            if (!ethers.utils.isAddress(address)) {
+                showMessage('Adresse invalide', 'error');
+                return;
+            }
+
+            contract = new ethers.Contract(address, CONTRACT_ABI, signer);
+            localStorage.setItem('contractAddress', address);
+            showMessage('Contrat configuré avec succès', 'success');
+            
+            await loadKingdomData();
+        }
+
+        // Load Kingdom Data
+        async function loadKingdomData() {
+            if (!contract || !userAddress) return;
+
+            try {
+                const kingdom = await contract.getKingdom(userAddress);
+                
+                kingdomData = {
+                    gold: kingdom.gold.toNumber(),
+                    gems: kingdom.gems.toNumber(),
+                    perHour: kingdom.perHour.toNumber(),
+                    alliesCount: kingdom.alliesCount.toNumber(),
+                    alliesEarned: kingdom.alliesEarned.toNumber(),
+                    claimTime: kingdom.claimTime.toNumber(),
+                    battleTime: kingdom.battleTime.toNumber(),
+                    battleId: kingdom.battleId,
+                    battlesInRow: kingdom.battlesInRow,
+                    isWinInRow: kingdom.isWinInRow,
+                    ally: kingdom.ally,
+                    tiles: Array.from(kingdom.tiles).map(t => Number(t))
+                };
+                
+                document.getElementById('goldAmount').textContent = 
+                    kingdomData.gold.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                document.getElementById('gemsAmount').textContent = 
+                    kingdomData.gems.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                document.getElementById('perHourAmount').textContent = 
+                    kingdomData.perHour.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                document.getElementById('alliesCount').textContent = 
+                    kingdomData.alliesCount.toString();
+
+                renderBuildingGrid(kingdomData.tiles);
+                updateBattleCooldown(kingdomData.battleTime);
+                updateBuildCost();
+                updateUpgradeCost();
+
+            } catch (error) {
+                console.error(error);
+                showMessage('Erreur lors du chargement des données: ' + error.message, 'error');
+            }
+        }
+
+        function renderBuildingGrid(tiles) {
+            const grid = document.getElementById('buildingGrid');
+            grid.innerHTML = '';
+            
+            for (let i = 0; i < 360; i++) {
+                const tile = document.createElement('div');
+                tile.className = 'tile';
+                tile.dataset.id = i;
+                
+                const tileData = decodeTile(tiles[i]);
+                
+                if (tileData.level === 0) {
+                    // Empty tile
+                    tile.classList.add('empty');
+                    
+                    if (currentMode === 'build') {
+                        if (selectedBuildTiles.has(i)) {
+                            tile.classList.add('selected-build');
+                        }
+                        tile.onclick = () => {
+                            if (selectedBuildTiles.has(i)) {
+                                selectedBuildTiles.delete(i);
+                            } else {
+                                selectedBuildTiles.add(i);
+                            }
+                            updateBuildCost();
+                            renderBuildingGrid(tiles);
+                        };
+                    }
+                } else {
+                    // Occupied tile
+                    tile.classList.add('occupied');
+                    const levelText = tileData.level + (tileData.upgrades > 0 ? '+' + tileData.upgrades : '');
+                    tile.textContent = levelText;
+                    
+                    if (currentMode === 'upgrade') {
+                        if (selectedUpgradeTile === i) {
+                            tile.classList.add('selected-upgrade');
+                        }
+                        tile.onclick = () => {
+                            selectedUpgradeTile = i;
+                            updateUpgradeCost();
+                            renderBuildingGrid(tiles);
+                        };
+                    }
+                }
+                
+                grid.appendChild(tile);
+            }
+        }
+
+        function updateBattleCooldown(lastBattleTime) {
+            const cooldownDiv = document.getElementById('battleCooldown');
+            const now = Math.floor(Date.now() / 1000);
+            const timeSinceLastBattle = now - lastBattleTime;
+            const cooldownDuration = 86400;
+
+            if (timeSinceLastBattle < cooldownDuration) {
+                const timeRemaining = cooldownDuration - timeSinceLastBattle;
+                const hours = Math.floor(timeRemaining / 3600);
+                const minutes = Math.floor((timeRemaining % 3600) / 60);
+                cooldownDiv.textContent = `⏱️ Cooldown: ${hours}h ${minutes}m`;
+                cooldownDiv.classList.remove('hidden');
+            } else {
+                cooldownDiv.classList.add('hidden');
+            }
+        }
+
+        // Contract Functions
+        async function buyGold() {
+            if (!contract) {
+                showMessage('Veuillez configurer l\'adresse du contrat', 'error');
+                return;
+            }
+
+            const bnbAmount = document.getElementById('bnbAmount').value;
+            const allyAddress = document.getElementById('allyAddress').value.trim() || ethers.constants.AddressZero;
+
+            if (!bnbAmount || parseFloat(bnbAmount) <= 0) {
+                showMessage('Montant invalide', 'error');
+                return;
+            }
+
+            try {
+                showMessage('Transaction en cours...', 'info');
+                const tx = await contract.buyGold(allyAddress, {
+                    value: ethers.utils.parseEther(bnbAmount)
+                });
+                await tx.wait();
+                showMessage('Or acheté avec succès!', 'success');
+                await loadKingdomData();
+            } catch (error) {
+                console.error(error);
+                showMessage('Erreur: ' + (error.reason || error.message), 'error');
+            }
+        }
+
+        async function sellGems() {
+            if (!contract) {
+                showMessage('Veuillez configurer l\'adresse du contrat', 'error');
+                return;
+            }
+
+            const gemsAmount = document.getElementById('sellGemsAmount').value;
+
+            if (!gemsAmount || parseInt(gemsAmount) <= 0) {
+                showMessage('Montant invalide', 'error');
+                return;
+            }
+
+            try {
+                showMessage('Transaction en cours...', 'info');
+                const tx = await contract.sellGems(gemsAmount);
+                await tx.wait();
+                showMessage('Gemmes vendues avec succès!', 'success');
+                await loadKingdomData();
+            } catch (error) {
+                console.error(error);
+                showMessage('Erreur: ' + (error.reason || error.message), 'error');
+            }
+        }
+
+        async function swapGemsToGold() {
+            if (!contract) {
+                showMessage('Veuillez configurer l\'adresse du contrat', 'error');
+                return;
+            }
+
+            const gemsAmount = document.getElementById('swapGemsAmount').value;
+
+            if (!gemsAmount || parseInt(gemsAmount) <= 0) {
+                showMessage('Montant invalide', 'error');
+                return;
+            }
+
+            try {
+                showMessage('Transaction en cours...', 'info');
+                const tx = await contract.swapGemsToGold(gemsAmount);
+                await tx.wait();
+                showMessage('Gemmes échangées avec succès!', 'success');
+                await loadKingdomData();
+            } catch (error) {
+                console.error(error);
+                showMessage('Erreur: ' + (error.reason || error.message), 'error');
+            }
+        }
+
+        async function placeBuildings() {
+            if (!contract) {
+                showMessage('Veuillez configurer l\'adresse du contrat', 'error');
+                return;
+            }
+
+            if (selectedBuildTiles.size === 0) {
+                showMessage('Sélectionnez au moins une case', 'error');
+                return;
+            }
+
+            const level = parseInt(document.getElementById('buildingLevel').value);
+            const tileIds = Array.from(selectedBuildTiles).sort((a, b) => a - b);
+
+            try {
+                showMessage('Transaction en cours...', 'info');
+                const tx = await contract.placeBuildings(tileIds, level);
+                await tx.wait();
+                showMessage('Bâtiments construits avec succès!', 'success');
+                clearBuildSelection();
+                await loadKingdomData();
+            } catch (error) {
+                console.error(error);
+                showMessage('Erreur: ' + (error.reason || error.message), 'error');
+            }
+        }
+
+        async function upgradeBuilding() {
+            if (!contract) {
+                showMessage('Veuillez configurer l\'adresse du contrat', 'error');
+                return;
+            }
+
+            if (selectedUpgradeTile === null) {
+                showMessage('Sélectionnez un bâtiment à améliorer', 'error');
+                return;
+            }
+
+            try {
+                showMessage('Transaction en cours...', 'info');
+                const tx = await contract.upgradeBuilding(selectedUpgradeTile);
+                await tx.wait();
+                showMessage('Bâtiment amélioré avec succès!', 'success');
+                selectedUpgradeTile = null;
+                await loadKingdomData();
+            } catch (error) {
+                console.error(error);
+                showMessage('Erreur: ' + (error.reason || error.message), 'error');
+            }
+        }
+
+        async function startBattle() {
+            if (!contract) {
+                showMessage('Veuillez configurer l\'adresse du contrat', 'error');
+                return;
+            }
+
+            const winChance = document.getElementById('winChance').value;
+
+            if (!winChance || parseInt(winChance) < 40 || parseInt(winChance) > 60) {
+                showMessage('Chance de victoire doit être entre 40 et 60', 'error');
+                return;
+            }
+
+            try {
+                showMessage('Transaction en cours...', 'info');
+                const tx = await contract.battle(winChance);
+                const receipt = await tx.wait();
+                
+                const event = receipt.events.find(e => e.event === 'BattleResult');
+                if (event) {
+                    const isWin = event.args.isWin;
+                    const reward = event.args.battleReward;
+                    showMessage(
+                        `${isWin ? '🎉 Victoire!' : '😢 Défaite'} Récompense: ${reward.toString()} Gold`,
+                        isWin ? 'success' : 'info'
+                    );
+                }
+                
+                await loadKingdomData();
+            } catch (error) {
+                console.error(error);
+                showMessage('Erreur: ' + (error.reason || error.message), 'error');
+            }
+        }
+
+        // Utility Functions
